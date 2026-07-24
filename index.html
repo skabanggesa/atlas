@@ -218,6 +218,7 @@
     }
 
 function onScanSuccess(decodedText) {
+  mainkanBunyiBeep();
       tutupImbas();
       const guru = JSON.parse(localStorage.getItem('atlas_guru'));
       const payload = {
@@ -330,6 +331,27 @@ function onScanSuccess(decodedText) {
       setTimeout(() => {
         toast.classList.add('translate-y-24', 'opacity-0');
       }, 3500);
+    }
+
+    // 🔊 Fungsi Penjana Bunyi Beep (Web Audio API)
+    function mainkanBunyiBeep() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.type = 'sine'; // Jenis gelombang bunyi
+        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); // Frekuensi bunyi (800Hz - rangup!)
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Kelantangan (Volume 10%)
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.12); // Durasi bunyi (0.12 saat)
+      } catch (e) {
+        console.log("Audio tidak disokong atau disekat", e);
+      }
     }
   </script>
 </body>
