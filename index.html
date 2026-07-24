@@ -217,7 +217,7 @@
       document.getElementById('butang-tindakan').classList.remove('hidden');
     }
 
-    function onScanSuccess(decodedText) {
+function onScanSuccess(decodedText) {
       tutupImbas();
       const guru = JSON.parse(localStorage.getItem('atlas_guru'));
       const payload = {
@@ -227,7 +227,7 @@
         kodKelas: decodedText
       };
 
-      paparToast("⌛ MEMPROSES...", "Menyimpan rekod ke pangkalan data...");
+      paparToast("⌛ MEMPROSES...", "Menyemak status keberadaan...");
 
       fetch(GAS_WEB_APP_URL, {
         method: "POST",
@@ -235,11 +235,19 @@
         body: JSON.stringify(payload)
       })
       .then(res => res.json())
-      .then(() => {
-        paparToast(`✅ IMBASAN ${statusSemasa} BERJAYA!`, `Kelas: ${decodedText}`);
+      .then(response => {
+        if (response.status === "success") {
+          // Jika Berjaya atau Auto-Checkout
+          paparToast("BERJAYA!", response.message);
+        } else {
+          // Jika Ditolak Sistem (Imbasan Bertindih / Belum Masuk)
+          alert(response.message);
+        }
+      })
+      .catch(err => {
+        alert("Ralat sambungan. Sila cuba lagi.");
       });
     }
-
     function onScanFailure(error) {}
 
     function bukaLiveData() {
