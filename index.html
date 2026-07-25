@@ -53,8 +53,13 @@
     </button>
 
     <!-- Butang tambahan: semakan status kelas berdasarkan masa -->
-<button onclick="bukaSemakanKelas()" class="w-full mb-4 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-500 hover:to-violet-600 text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-200 shadow-lg flex items-center justify-center gap-2 border border-indigo-500/30">
-  <span>🏫 SEMAK STATUS KELAS</span>
+<button 
+onclick="bukaSemakanStatusKelas()" 
+class="col-span-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-2xl text-lg transition duration-200 shadow-lg shadow-indigo-600/30 flex flex-col items-center justify-center gap-1">
+<span>🔍 SEMAK STATUS KELAS</span>
+<span class="text-xs font-normal opacity-80">
+Cari keberadaan kelas sekarang
+</span>
 </button>
 
     <div id="butang-tindakan" class="grid grid-cols-2 gap-4 mb-2">
@@ -138,34 +143,105 @@
     </div>
   </div>
 
-<div id="kelas-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-  <div class="w-full max-w-lg bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-5">
-    <div class="flex justify-between items-start gap-3 mb-4">
-      <div>
-        <h3 class="text-lg font-bold text-indigo-300">Semak Status Kelas</h3>
-        <p class="text-xs text-slate-400">Masukkan nama kelas untuk semak lokasi, guru, dan subjek terakhir.</p>
-      </div>
-      <button onclick="tutupSemakanKelas()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
-    </div>
+<!-- ================= MODAL PILIH KELAS ================= -->
 
-    <div class="space-y-3">
-      <div>
-        <label class="block text-xs text-slate-400 mb-1">Nama Kelas:</label>
-        <input id="input-nama-kelas" type="text" placeholder="Contoh: 1 Cemerlang" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:border-indigo-500">
-      </div>
-    </div>
+<div id="class-modal" 
+class="hidden fixed inset-0 bg-black/70 z-50 items-center justify-center p-4">
 
-    <div class="mt-4 flex flex-wrap gap-2 justify-end">
-      <button onclick="tutupSemakanKelas()" class="bg-slate-700 hover:bg-slate-600 text-sm px-4 py-2 rounded-xl font-semibold text-slate-200">
-        Tutup
-      </button>
-      <button onclick="semakStatusKelas()" class="bg-indigo-600 hover:bg-indigo-500 text-sm px-4 py-2 rounded-xl font-semibold text-white">
-        Semak
-      </button>
-    </div>
+<div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 p-6">
 
-    <div id="hasil-semak-kelas" class="hidden mt-4 rounded-xl border border-slate-700 bg-slate-900/80 p-4"></div>
-  </div>
+<div class="flex justify-between items-center mb-5">
+
+<h2 class="text-xl font-bold text-blue-400">
+📚 PILIH KELAS
+</h2>
+
+<button 
+onclick="tutupModalKelas()"
+class="text-red-400 font-bold">
+✕
+</button>
+</div>
+<div id="butang-kelas"
+class="grid grid-cols-2 gap-3">
+</div>
+</div>
+</div>
+
+  <!-- ================= MODAL SEMAK STATUS KELAS ================= -->
+
+<div id="status-kelas-modal"
+class="hidden fixed inset-0 bg-black/70 z-50 items-center justify-center p-4">
+
+
+<div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-xl border border-slate-700 p-6">
+
+
+<div class="flex justify-between items-center mb-5">
+
+<h2 class="text-xl font-bold text-indigo-400">
+🔍 STATUS KELAS
+</h2>
+
+
+<button 
+onclick="tutupSemakanStatusKelas()"
+class="text-red-400 font-bold">
+✕
+</button>
+
+</div>
+
+
+
+<label class="text-sm text-slate-300">
+Pilih Kelas
+</label>
+
+
+<select 
+id="select-kelas-semak"
+class="w-full mt-2 p-3 rounded-xl bg-slate-900 border border-slate-600 text-white">
+
+
+<option value="">
+-- Pilih Kelas --
+</option>
+
+
+</select>
+
+
+
+<button
+
+onclick="semakStatusKelas()"
+
+class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold">
+
+🔎 SEMAK
+
+</button>
+
+
+
+<div 
+id="hasil-status-kelas"
+
+class="hidden mt-5 bg-slate-900 border border-slate-700 rounded-xl p-4">
+
+
+<div id="hasil-status-kelas-kandungan">
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
 </div>
 
   <!-- Toast Notifikasi -->
@@ -182,41 +258,60 @@
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-p-SoAAgkEgFvHdm0rEVR1YTEAdd-86xNnwqOigL4lww1Lm1QbVC_YXeV6YVhFb-o8A/exec";
 
     const SENARAI_SUBJEK = [
-      "Bahasa Melayu",
-      "Bahasa Inggeris",
-      "Matematik",
-      "Sains",
-      "Pendidikan Agama Islam",
-      "Bahasa Arab",
-      "Muzik",
-      "Seni Visual",
-      "Sejarah",
-      "Moral",
+      "BAHASA MELAYU",
+      "BAHASA INGGERIS",
+      "MATEMATIK",
+      "SAINS",
+      "PENDIDIKAN AGAMA ISLAM",
+      "BAHASA ARAB",
+      "MUZIK",
+      "SENI VISUAL",
+      "SEJARAH",
+      "MORAL",
       "RBT",
       "PJK"
     ];
 
+  const SENARAI_KELAS = [
+  "1 CEMERLANG",
+  "1 GEMILANG",
+  "2 CEMERLANG",
+  "2 GEMILANG",
+  "3 CEMERLANG",
+  "3 GEMILANG",
+  "4 CEMERLANG",
+  "4 GEMILANG",
+  "5 CEMERLANG",
+  "5 GEMILANG",
+  "6 CEMERLANG",
+  "6 GEMILANG"
+];
+
     const SENARAI_LOKASI = [
-      "Padang",
-      "Makmal Sains",
-      "Makmal Komputer",
-      "Pusat Sumber",
-      "Bilik jQaf",
-      "Bilik Kaunseling",
-      "Bilik Pemulihan",
-      "Surau",
-      "Dewan Kesatria",
-      "Dewan Sri Gesa"
+      "PADANG",
+      "MAKMAL SAINS",
+      "MAKMAL KOMPUTER",
+      "PUSAT SUMBER",
+      "BILIK jQAF",
+      "BILIK KAUNSELING",
+      "BILIK PEMULIHAN",
+      "SURAU",
+      "DEWAN KESATRIA",
+      "DEWAN SRI GESA"
     ];
 
     let senaraiGuruGlobal = [];
     let dataLiveGlobal = [];
     let statusSemasa = "";
     let subjekSemasa = "";
+    let kelasSemasa = "";
+    let lokasiSemasa = "";
     let html5QrcodeScanner = null;
 
-    window.onload = function() {
-      isiButangSubjek();
+window.onload = function() {
+  isiButangKelas();
+  isiButangSubjek();
+  isiDropdownKelasSemakan();
 
       const savedGuru = localStorage.getItem('atlas_guru');
       if (savedGuru) {
@@ -228,6 +323,44 @@
           .then(data => isiDropdownGuru(data));
       }
     };
+
+    function isiDropdownKelasSemakan(){
+const select =
+document.getElementById('select-kelas-semak');
+
+if(!select) return;
+
+select.innerHTML =
+'<option value="">-- Pilih Kelas --</option>';
+
+SENARAI_KELAS.forEach(kelas=>{
+select.innerHTML +=
+`
+<option value="${kelas}">
+${kelas}
+</option>
+`;
+});
+
+}
+
+    function bukaSemakanStatusKelas(){
+document.getElementById('status-kelas-modal')
+.classList.remove('hidden');
+
+document.getElementById('status-kelas-modal')
+.classList.add('flex');
+
+}
+
+    function tutupSemakanStatusKelas(){
+document.getElementById('status-kelas-modal')
+.classList.add('hidden');
+
+document.getElementById('status-kelas-modal')
+.classList.remove('flex');
+
+}
 
     function isiDropdownGuru(data) {
       senaraiGuruGlobal = data;
@@ -293,11 +426,11 @@ function tutupModalSubjek() {
   document.getElementById('subject-modal').classList.remove('flex');
 }
 
-    function pilihSubjekDanImbas(subjek) {
-      subjekSemasa = subjek;
-      tutupModalSubjek();
-      aktifkanScanner();
-    }
+function pilihSubjekDanImbas(subjek){
+ subjekSemasa=subjek;
+ tutupModalSubjek();
+ aktifkanScanner();
+}
 
     function aktifkanScanner() {
       document.getElementById('butang-tindakan').classList.add('hidden');
@@ -334,18 +467,18 @@ function tutupModalSubjek() {
     }
 
     // 📸 Kamera Live Stream Berfungsi 100% di GitHub Pages!
-    function mulaImbas(status) {
-      statusSemasa = status;
+function mulaImbas(status){
 
-      // Untuk MASUK, minta subjek dahulu sebelum kamera diaktifkan
-      if (status === 'MASUK') {
-        bukaModalSubjek();
-        return;
-      }
+  statusSemasa=status;
 
-      // Untuk KELUAR, terus aktifkan kamera
-      aktifkanScanner();
-    }
+  kelasSemasa="";
+  subjekSemasa="";
+  lokasiSemasa="";
+
+
+  bukaModalKelas();
+
+}
 
 function tutupImbas() {
   if (html5QrcodeScanner) {
@@ -359,6 +492,30 @@ function tutupImbas() {
   document.getElementById('label-subjek-scan').classList.add('hidden');
 }
 
+    function bukaModalKelas(){
+
+  document.getElementById('class-modal')
+  .classList.remove('hidden');
+
+
+  document.getElementById('class-modal')
+  .classList.add('flex');
+
+}
+
+
+
+function tutupModalKelas(){
+
+  document.getElementById('class-modal')
+  .classList.add('hidden');
+
+
+  document.getElementById('class-modal')
+  .classList.remove('flex');
+
+}
+
 function onScanSuccess(decodedText) {
   mainkanBunyiBeep();
 
@@ -368,15 +525,16 @@ function onScanSuccess(decodedText) {
 
   tutupImbas();
 
-  const payload = {
+lokasiSemasa = decodedText;
+
+const payload = {
     nama: guru.nama,
     emel: guru.emel,
     status: statusHantar,
+    kelas: kelasSemasa,
     subjek: subjekHantar,
-    kodKelas: decodedText,
-    kodLokasi: decodedText,
-    lokasi: decodedText
-  };
+    lokasi: lokasiSemasa
+};
 
   paparToast("⌛ MEMPROSES...", "Menyemak status keberadaan...");
 
@@ -393,13 +551,17 @@ function onScanSuccess(decodedText) {
       alert(response.message);
     }
 
-    statusSemasa = "";
-    subjekSemasa = "";
+statusSemasa = "";
+kelasSemasa = "";
+subjekSemasa = "";
+lokasiSemasa = "";
   })
   .catch(err => {
     alert("Ralat sambungan. Sila cuba lagi.");
-    statusSemasa = "";
-    subjekSemasa = "";
+statusSemasa = "";
+kelasSemasa = "";
+subjekSemasa = "";
+lokasiSemasa = "";
   });
 }
     function onScanFailure(error) {}
@@ -810,6 +972,35 @@ function paparHasilSemakanKelas(data) {
       </div>
     </div>
   `;
+}
+
+    function isiButangKelas(){
+
+  const kontainer = document.getElementById('butang-kelas');
+
+  kontainer.innerHTML="";
+
+  SENARAI_KELAS.forEach(kelas=>{
+
+      const button=document.createElement('button');
+
+      button.type="button";
+      button.className =
+      "bg-slate-900 hover:bg-slate-700 border border-slate-600 text-white font-semibold py-3 rounded-xl text-sm";
+      button.innerText=kelas;
+
+      button.onclick=function(){
+          kelasSemasa=kelas;
+          tutupModalKelas();
+          if(statusSemasa==="MASUK"){
+              bukaModalSubjek();
+          }
+          else{
+              aktifkanScanner();
+          }
+      };
+      kontainer.appendChild(button);
+  });
 }
   </script>
 </body>
