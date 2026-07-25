@@ -320,12 +320,8 @@ function bukaSemakanStatusLokasi() {
   document.getElementById('hasil-semak-lokasi-kandungan').innerHTML = "";
   document.getElementById('input-masa-semak').value = formatMasaInputSekarang();
 
-  const select = document.getElementById('select-lokasi-semak');
-  
-  // 🛠️ KEMAS KINI DI SINI: Jika pilihan di dalam dropdown kurang dari atau sama dengan 1, isi senarai
-  if (select.options.length <= 1) {
-    isiDropdownLokasiSemakan();
-  }
+  // Panggil fungsi isi dropdown secara terus tanpa sebarang syarat
+  isiDropdownLokasiSemakan();
 
   document.getElementById('status-modal').classList.remove('hidden');
   document.getElementById('status-modal').classList.add('flex');
@@ -1093,19 +1089,22 @@ function paparHasilSemakanKelas(data) {
   });
 }
 
-    function isiDropdownLokasiSemakan() {
+function isiDropdownLokasiSemakan() {
   const select = document.getElementById('select-lokasi-semak');
-  if(!select) return;
+  if(!select) {
+    console.error("ID select-lokasi-semak tidak dijumpai di dalam HTML!");
+    return;
+  }
 
-  // Kosongkan pilihan sedia ada
+  // 1. Kosongkan dropdown terlebih dahulu
   select.innerHTML = '<option value="">-- Sila Pilih --</option>';
 
-  // Gabungkan array SENARAI_KELAS dan SENARAI_LOKASI
+  // 2. Gabungkan senarai global
   const senaraiPilihan = [...SENARAI_KELAS, ...SENARAI_LOKASI];
 
-  // Masukkan setiap item ke dalam dropdown
+  // 3. Masukkan ke dalam dropdown satu per satu
   senaraiPilihan.forEach(function(item) {
-    let opt = document.createElement('option');
+    const opt = document.createElement('option');
     opt.value = item;
     opt.textContent = item;
     select.appendChild(opt);
