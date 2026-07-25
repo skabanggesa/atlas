@@ -189,59 +189,35 @@ onclick="tutupSemakanStatusKelas()"
 class="text-red-400 font-bold">
 ✕
 </button>
-
 </div>
-
-
 
 <label class="text-sm text-slate-300">
 Pilih Kelas
 </label>
 
-
 <select 
 id="select-kelas-semak"
 class="w-full mt-2 p-3 rounded-xl bg-slate-900 border border-slate-600 text-white">
-
 
 <option value="">
 -- Pilih Kelas --
 </option>
 
-
 </select>
 
-
-
-<button
-
+  <button
 onclick="semakStatusKelas()"
-
 class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold">
-
 🔎 SEMAK
-
 </button>
-
-
 
 <div 
 id="hasil-status-kelas"
-
 class="hidden mt-5 bg-slate-900 border border-slate-700 rounded-xl p-4">
-
-
 <div id="hasil-status-kelas-kandungan">
-
 </div>
-
-
 </div>
-
-
 </div>
-
-
 </div>
 
   <!-- Toast Notifikasi -->
@@ -918,27 +894,39 @@ function tutupSemakanKelas() {
 }
 
 function semakStatusKelas() {
-  const kelas = document.getElementById('input-nama-kelas').value.trim();
+  const kelas =
+    document.getElementById('select-kelas-semak').value.trim();
   if (!kelas) {
-    alert("Sila masukkan nama kelas.");
+    alert("Sila pilih kelas dahulu.");
     return;
   }
-
-  paparToast("⌛ MENYEMAK...", "Mencari status kelas terkini...");
-
-  fetch(`${GAS_WEB_APP_URL}?action=getStatusKelas&kelas=${encodeURIComponent(kelas)}`)
-    .then(res => res.json())
-    .then(data => {
-      paparHasilSemakanKelas(data);
-    })
-    .catch(err => {
-      document.getElementById('hasil-semak-kelas').classList.remove('hidden');
-      document.getElementById('hasil-semak-kelas').innerHTML = `
-        <p class="text-rose-300 text-sm">Ralat sambungan. Sila cuba lagi.</p>
-      `;
-    });
+  paparToast(
+    "⌛ MENYEMAK...",
+    "Mencari lokasi kelas terkini..."
+  );
+  fetch(
+    `${GAS_WEB_APP_URL}?action=getStatusKelas&kelas=${encodeURIComponent(kelas)}`
+  )
+  .then(res => res.json())
+  .then(data => {
+    paparHasilSemakanKelas(data);
+  })
+  .catch(err => {
+    console.log(err);
+    document
+      .getElementById('hasil-semak-kelas')
+      .classList
+      .remove('hidden');
+    document
+    .getElementById('hasil-semak-kelas')
+    .innerHTML = `
+      <p class="text-rose-300 text-sm">
+        Ralat sambungan. Sila cuba lagi.
+      </p>
+    `;
+  });
 }
-
+    
 function paparHasilSemakanKelas(data) {
   const box = document.getElementById('hasil-semak-kelas');
   box.classList.remove('hidden');
