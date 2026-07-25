@@ -315,24 +315,22 @@ ${kelas}
 
 }
 
-    function bukaSemakanStatusKelas(){
-document.getElementById('status-kelas-modal')
-.classList.remove('hidden');
+function bukaSemakanStatusLokasi() {
+  document.getElementById('hasil-semak-lokasi').classList.add('hidden');
+  document.getElementById('hasil-semak-lokasi-kandungan').innerHTML = "";
+  document.getElementById('input-masa-semak').value = formatMasaInputSekarang();
 
-document.getElementById('status-kelas-modal')
-.classList.add('flex');
+  const select = document.getElementById('select-lokasi-semak');
+  
+  // 🛠️ KEMAS KINI DI SINI: Jika pilihan di dalam dropdown kurang dari atau sama dengan 1, isi senarai
+  if (select.options.length <= 1) {
+    isiDropdownLokasiSemakan();
+  }
 
+  document.getElementById('status-modal').classList.remove('hidden');
+  document.getElementById('status-modal').classList.add('flex');
 }
-
-    function tutupSemakanStatusKelas(){
-document.getElementById('status-kelas-modal')
-.classList.add('hidden');
-
-document.getElementById('status-kelas-modal')
-.classList.remove('flex');
-
-}
-
+    
     function isiDropdownGuru(data) {
       senaraiGuruGlobal = data;
       const select = document.getElementById('select-guru');
