@@ -284,15 +284,6 @@
       });
     }
 
-    function isiDropdownLokasiSemakan() {
-      const select = document.getElementById('select-lokasi-semak');
-      select.innerHTML = '<option value="">-- Pilih lokasi --</option>';
-
-      SENARAI_LOKASI.forEach(lokasi => {
-        select.innerHTML += `<option value="${lokasi}">${lokasi}</option>`;
-      });
-    }
-
     function bukaModalSubjek() {
       document.getElementById('subject-modal').classList.remove('hidden');
       document.getElementById('subject-modal').classList.add('flex');
