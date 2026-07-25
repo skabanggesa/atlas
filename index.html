@@ -309,12 +309,10 @@
       document.getElementById('subject-modal').classList.add('flex');
     }
 
-    function tutupModalSubjek() {
-      document.getElementById('subject-modal').classList.add('hidden');
-      document.getElementById('subject-modal').classList.remove('flex');
-      subjekSemasa = "";
-      statusSemasa = "";
-    }
+function tutupModalSubjek() {
+  document.getElementById('subject-modal').classList.add('hidden');
+  document.getElementById('subject-modal').classList.remove('flex');
+}
 
     function pilihSubjekDanImbas(subjek) {
       subjekSemasa = subjek;
@@ -370,56 +368,61 @@
       aktifkanScanner();
     }
 
-    function tutupImbas() {
-      if (html5QrcodeScanner) {
-        html5QrcodeScanner.stop()
-          .then(() => html5QrcodeScanner.clear())
-          .catch(err => console.log(err));
-      }
-      html5QrcodeScanner = null;
-      document.getElementById('scanner-container').classList.add('hidden');
-      document.getElementById('butang-tindakan').classList.remove('hidden');
-      document.getElementById('label-subjek-scan').classList.add('hidden');
-      subjekSemasa = "";
-      statusSemasa = "";
+function tutupImbas() {
+  if (html5QrcodeScanner) {
+    html5QrcodeScanner.stop()
+      .then(() => html5QrcodeScanner.clear())
+      .catch(err => console.log(err));
+  }
+  html5QrcodeScanner = null;
+  document.getElementById('scanner-container').classList.add('hidden');
+  document.getElementById('butang-tindakan').classList.remove('hidden');
+  document.getElementById('label-subjek-scan').classList.add('hidden');
+}
+
+function onScanSuccess(decodedText) {
+  mainkanBunyiBeep();
+
+  const guru = JSON.parse(localStorage.getItem('atlas_guru'));
+  const statusHantar = statusSemasa;
+  const subjekHantar = subjekSemasa;
+
+  tutupImbas();
+
+  const payload = {
+    nama: guru.nama,
+    emel: guru.emel,
+    status: statusHantar,
+    subjek: subjekHantar,
+    kodKelas: decodedText,
+    kodLokasi: decodedText,
+    lokasi: decodedText
+  };
+
+  paparToast("⌛ MEMPROSES...", "Menyemak status keberadaan...");
+
+  fetch(GAS_WEB_APP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(response => {
+    if (response.status === "success") {
+      paparToast("BERJAYA!", response.message);
+    } else {
+      alert(response.message);
     }
 
-    function onScanSuccess(decodedText) {
-      mainkanBunyiBeep();
-      tutupImbas();
-
-      const guru = JSON.parse(localStorage.getItem('atlas_guru'));
-
-      const payload = {
-        nama: guru.nama,
-        emel: guru.emel,
-        status: statusSemasa,
-        subjek: subjekSemasa,
-        kodKelas: decodedText,
-        kodLokasi: decodedText,
-        lokasi: decodedText
-      };
-
-      paparToast("⌛ MEMPROSES...", "Menyemak status keberadaan...");
-
-      fetch(GAS_WEB_APP_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(response => {
-        if (response.status === "success") {
-          paparToast("BERJAYA!", response.message);
-        } else {
-          alert(response.message);
-        }
-      })
-      .catch(err => {
-        alert("Ralat sambungan. Sila cuba lagi.");
-      });
-    }
-
+    statusSemasa = "";
+    subjekSemasa = "";
+  })
+  .catch(err => {
+    alert("Ralat sambungan. Sila cuba lagi.");
+    statusSemasa = "";
+    subjekSemasa = "";
+  });
+}
     function onScanFailure(error) {}
 
     function bukaLiveData() {
