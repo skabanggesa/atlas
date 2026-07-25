@@ -1094,6 +1094,25 @@ function paparHasilSemakanKelas(data) {
       kontainer.appendChild(button);
   });
 }
+
+    function isiDropdownLokasiSemakan() {
+  const select = document.getElementById('select-lokasi-semak');
+  if(!select) return;
+
+  // Kosongkan pilihan sedia ada
+  select.innerHTML = '<option value="">-- Sila Pilih --</option>';
+
+  // Gabungkan array SENARAI_KELAS dan SENARAI_LOKASI
+  const senaraiPilihan = [...SENARAI_KELAS, ...SENARAI_LOKASI];
+
+  // Masukkan setiap item ke dalam dropdown
+  senaraiPilihan.forEach(function(item) {
+    let opt = document.createElement('option');
+    opt.value = item;
+    opt.textContent = item;
+    select.appendChild(opt);
+  });
+}
   </script>
 
   <!-- ====================================================== -->
@@ -1132,7 +1151,7 @@ function paparHasilSemakanKelas(data) {
 
     <!-- Butang Semak -->
     <!-- (Pastikan anda mempunyai fungsi semakLokasiPadaMasa() atau nama yang sepadan di JS anda) -->
-    <button onclick="hantarSemakanLokasi()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-lg">
+    <button onclick="semakStatusLokasi()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-lg">
       SEMAK SEKARANG
     </button>
 
