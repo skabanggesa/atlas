@@ -1095,5 +1095,55 @@ function paparHasilSemakanKelas(data) {
   });
 }
   </script>
+
+  <!-- ====================================================== -->
+<!-- MODAL: SEMAK STATUS LOKASI (BERDASARKAN MASA) -->
+<!-- ====================================================== -->
+<div id="status-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-opacity">
+  <div class="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+    
+    <!-- Pengepala Modal -->
+    <div class="flex justify-between items-center border-b border-gray-700 pb-3">
+      <h3 class="text-white font-bold text-lg flex items-center gap-2">
+        <span>🔎</span> Semak Status Lokasi
+      </h3>
+      <!-- Butang Tutup -->
+      <button onclick="tutupSemakanStatusLokasi()" class="text-gray-400 hover:text-red-400 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Pilihan Lokasi -->
+    <div>
+      <label class="block text-gray-400 text-sm font-semibold mb-2">Pilih Lokasi / Kelas</label>
+      <select id="select-lokasi-semak" class="w-full bg-gray-800 text-white border border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+        <option value="">-- Sila Pilih --</option>
+        <!-- Pilihan akan dimasukkan melalui fungsi isiDropdownLokasiSemakan() -->
+      </select>
+    </div>
+
+    <!-- Input Masa -->
+    <div>
+      <label class="block text-gray-400 text-sm font-semibold mb-2">Pilih Tarikh & Masa</label>
+      <input type="datetime-local" id="input-masa-semak" class="w-full bg-gray-800 text-white border border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+    </div>
+
+    <!-- Butang Semak -->
+    <!-- (Pastikan anda mempunyai fungsi semakLokasiPadaMasa() atau nama yang sepadan di JS anda) -->
+    <button onclick="hantarSemakanLokasi()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-lg">
+      SEMAK SEKARANG
+    </button>
+
+    <!-- Kawasan Paparan Hasil Carian -->
+    <div id="hasil-semak-lokasi" class="hidden mt-2 p-4 bg-gray-800 rounded-xl border border-gray-700 shadow-inner">
+      <div id="hasil-semak-lokasi-kandungan" class="text-sm text-gray-200 space-y-2">
+        <!-- Hasil jawapan pelayan akan dipaparkan di sini -->
+      </div>
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
