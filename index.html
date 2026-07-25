@@ -52,10 +52,10 @@
       <span>📊 RADAR KEBERADAAN GURU (LIVE)</span>
     </button>
 
-    <!-- Butang tambahan: semakan status lokasi berdasarkan masa -->
-    <button onclick="bukaSemakanStatusLokasi()" class="w-full mb-4 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-500 hover:to-violet-600 text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-200 shadow-lg flex items-center justify-center gap-2 border border-indigo-500/30">
-      <span>🔎 SEMAK STATUS LOKASI (BERDASARKAN MASA)</span>
-    </button>
+    <!-- Butang tambahan: semakan status kelas berdasarkan masa -->
+<button onclick="bukaSemakanKelas()" class="w-full mb-4 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-500 hover:to-violet-600 text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-200 shadow-lg flex items-center justify-center gap-2 border border-indigo-500/30">
+  <span>🏫 SEMAK STATUS KELAS</span>
+</button>
 
     <div id="butang-tindakan" class="grid grid-cols-2 gap-4 mb-2">
       <button onclick="mulaImbas('MASUK')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-6 rounded-2xl text-lg transition duration-200 shadow-lg shadow-emerald-600/30 flex flex-col items-center justify-center gap-1">
@@ -138,46 +138,35 @@
     </div>
   </div>
 
-  <!-- ================= MODAL SEMAK STATUS LOKASI ================= -->
-  <div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-    <div class="w-full max-w-2xl bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-5">
-      <div class="flex justify-between items-start gap-3 mb-4">
-        <div>
-          <h3 class="text-lg font-bold text-indigo-300">Semak Status Lokasi Berdasarkan Masa</h3>
-          <p class="text-xs text-slate-400">Pilih lokasi dan masa untuk menyemak rekod keberadaan yang tersedia.</p>
-        </div>
-        <button onclick="tutupSemakanStatusLokasi()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+<div id="kelas-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+  <div class="w-full max-w-lg bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-5">
+    <div class="flex justify-between items-start gap-3 mb-4">
+      <div>
+        <h3 class="text-lg font-bold text-indigo-300">Semak Status Kelas</h3>
+        <p class="text-xs text-slate-400">Masukkan nama kelas untuk semak lokasi, guru, dan subjek terakhir.</p>
       </div>
+      <button onclick="tutupSemakanKelas()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Lokasi / Kelas:</label>
-          <select id="select-lokasi-semak" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:border-indigo-500">
-            <option value="">-- Pilih lokasi --</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Tarikh & Masa:</label>
-          <input type="datetime-local" id="input-masa-semak" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:border-indigo-500">
-        </div>
-      </div>
-
-      <div class="mt-4 flex flex-wrap gap-2 justify-end">
-        <button onclick="tutupSemakanStatusLokasi()" class="bg-slate-700 hover:bg-slate-600 text-sm px-4 py-2 rounded-xl font-semibold text-slate-200">
-          Tutup
-        </button>
-        <button onclick="semakStatusLokasi()" class="bg-indigo-600 hover:bg-indigo-500 text-sm px-4 py-2 rounded-xl font-semibold text-white">
-          Semak
-        </button>
-      </div>
-
-      <div id="hasil-semak-lokasi" class="hidden mt-4 rounded-xl border border-slate-700 bg-slate-900/80 p-4">
-        <p class="text-sm font-bold text-slate-200 mb-2">Hasil Semakan</p>
-        <div id="hasil-semak-lokasi-kandungan" class="text-sm text-slate-300"></div>
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs text-slate-400 mb-1">Nama Kelas:</label>
+        <input id="input-nama-kelas" type="text" placeholder="Contoh: 1 Cemerlang" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:border-indigo-500">
       </div>
     </div>
+
+    <div class="mt-4 flex flex-wrap gap-2 justify-end">
+      <button onclick="tutupSemakanKelas()" class="bg-slate-700 hover:bg-slate-600 text-sm px-4 py-2 rounded-xl font-semibold text-slate-200">
+        Tutup
+      </button>
+      <button onclick="semakStatusKelas()" class="bg-indigo-600 hover:bg-indigo-500 text-sm px-4 py-2 rounded-xl font-semibold text-white">
+        Semak
+      </button>
+    </div>
+
+    <div id="hasil-semak-kelas" class="hidden mt-4 rounded-xl border border-slate-700 bg-slate-900/80 p-4"></div>
   </div>
+</div>
 
   <!-- Toast Notifikasi -->
   <div id="toast" class="fixed bottom-6 bg-emerald-500 text-slate-950 font-bold px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-24 opacity-0 flex items-center gap-3 z-50">
@@ -762,6 +751,76 @@ function onScanSuccess(decodedText) {
         console.log("Audio tidak disokong atau disekat", e);
       }
     }
+
+    function bukaSemakanKelas() {
+  document.getElementById('hasil-semak-kelas').classList.add('hidden');
+  document.getElementById('hasil-semak-kelas').innerHTML = "";
+  document.getElementById('input-nama-kelas').value = "";
+  document.getElementById('kelas-modal').classList.remove('hidden');
+  document.getElementById('kelas-modal').classList.add('flex');
+}
+
+function tutupSemakanKelas() {
+  document.getElementById('kelas-modal').classList.add('hidden');
+  document.getElementById('kelas-modal').classList.remove('flex');
+}
+
+function semakStatusKelas() {
+  const kelas = document.getElementById('input-nama-kelas').value.trim();
+  if (!kelas) {
+    alert("Sila masukkan nama kelas.");
+    return;
+  }
+
+  paparToast("⌛ MENYEMAK...", "Mencari status kelas terkini...");
+
+  fetch(`${GAS_WEB_APP_URL}?action=getStatusKelas&kelas=${encodeURIComponent(kelas)}`)
+    .then(res => res.json())
+    .then(data => {
+      paparHasilSemakanKelas(data);
+    })
+    .catch(err => {
+      document.getElementById('hasil-semak-kelas').classList.remove('hidden');
+      document.getElementById('hasil-semak-kelas').innerHTML = `
+        <p class="text-rose-300 text-sm">Ralat sambungan. Sila cuba lagi.</p>
+      `;
+    });
+}
+
+function paparHasilSemakanKelas(data) {
+  const box = document.getElementById('hasil-semak-kelas');
+  box.classList.remove('hidden');
+
+  if (!data || data.status !== "success") {
+    box.innerHTML = `
+      <p class="text-rose-300 text-sm">${(data && data.message) ? data.message : "Semakan gagal."}</p>
+    `;
+    return;
+  }
+
+  if (!data.rekod || data.rekod.length === 0) {
+    box.innerHTML = `
+      <div class="rounded-xl border border-slate-700 bg-slate-950 p-4">
+        <p class="text-slate-300 text-sm">${data.message}</p>
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
+      <p class="text-sm font-bold text-indigo-200 mb-2">Ringkasan Kelas</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+        <div><span class="text-slate-400">Kelas:</span> <span class="text-white font-semibold">${data.kelas}</span></div>
+        <div><span class="text-slate-400">Status:</span> <span class="text-white font-semibold">${data.statusKelas}</span></div>
+        <div><span class="text-slate-400">Lokasi semasa:</span> <span class="text-white font-semibold">${data.lokasiSemasa || '-'}</span></div>
+        <div><span class="text-slate-400">Guru semasa:</span> <span class="text-white font-semibold">${data.guruSemasa || '-'}</span></div>
+        <div><span class="text-slate-400">Subjek semasa:</span> <span class="text-white font-semibold">${data.subjekSemasa || '-'}</span></div>
+        <div><span class="text-slate-400">Masa terakhir:</span> <span class="text-white font-semibold">${data.masaSemasa || '-'}</span></div>
+      </div>
+    </div>
+  `;
+}
   </script>
 </body>
 </html>
