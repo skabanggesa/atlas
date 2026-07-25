@@ -52,21 +52,29 @@
       <span>📊 RADAR KEBERADAAN GURU (LIVE)</span>
     </button>
 
+    <!-- Butang tambahan: semakan status lokasi berdasarkan masa -->
+    <button onclick="bukaSemakanStatusLokasi()" class="w-full mb-4 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-500 hover:to-violet-600 text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-200 shadow-lg flex items-center justify-center gap-2 border border-indigo-500/30">
+      <span>🔎 SEMAK STATUS LOKASI (BERDASARKAN MASA)</span>
+    </button>
+
     <div id="butang-tindakan" class="grid grid-cols-2 gap-4 mb-2">
       <button onclick="mulaImbas('MASUK')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-6 rounded-2xl text-lg transition duration-200 shadow-lg shadow-emerald-600/30 flex flex-col items-center justify-center gap-1">
         <span>🟢 MASUK</span>
-        <span class="text-xs font-normal opacity-80">Imbas Masuk Kelas</span>
+        <span class="text-xs font-normal opacity-80">Imbas Masuk Kelas / Lokasi</span>
       </button>
       <button onclick="mulaImbas('KELUAR')" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-6 rounded-2xl text-lg transition duration-200 shadow-lg shadow-rose-600/30 flex flex-col items-center justify-center gap-1">
         <span>🔴 KELUAR</span>
-        <span class="text-xs font-normal opacity-80">Imbas Keluar Kelas</span>
+        <span class="text-xs font-normal opacity-80">Imbas Keluar Kelas / Lokasi</span>
       </button>
     </div>
 
     <!-- Kotak Pengimbas Kamera Live Stream -->
     <div id="scanner-container" class="hidden flex flex-col items-center">
       <div class="w-full flex justify-between items-center mb-2">
-        <span id="label-status-scan" class="font-bold text-sm px-3 py-1 rounded-full bg-blue-900/50 text-blue-300 border border-blue-500/30"></span>
+        <div class="flex flex-col gap-2">
+          <span id="label-status-scan" class="font-bold text-sm px-3 py-1 rounded-full bg-blue-900/50 text-blue-300 border border-blue-500/30"></span>
+          <span id="label-subjek-scan" class="hidden font-semibold text-xs px-3 py-1 rounded-full bg-slate-700 text-slate-200 border border-slate-600"></span>
+        </div>
         <button onclick="tutupImbas()" class="text-sm text-rose-400 hover:text-rose-300 font-semibold">✕ Batal</button>
       </div>
       <div id="reader" class="w-full bg-black rounded-xl overflow-hidden border-2 border-slate-600"></div>
@@ -91,9 +99,9 @@
         </select>
       </div>
       <div>
-        <label class="block text-xs text-slate-400 mb-1">Saring Kelas:</label>
+        <label class="block text-xs text-slate-400 mb-1">Saring Lokasi/Kelas:</label>
         <select id="filter-kelas" onchange="saringDanPaparData()" class="w-full p-2 bg-slate-900 border border-slate-600 rounded-lg text-xs text-white focus:outline-none focus:border-amber-500">
-          <option value="">Semua Kelas</option>
+          <option value="">Semua Lokasi/Kelas</option>
         </select>
       </div>
     </div>
@@ -105,13 +113,69 @@
             <th class="p-3">Masa</th>
             <th class="p-3">Status</th>
             <th class="p-3">Nama Guru</th>
-            <th class="p-3">Kelas</th>
+            <th class="p-3">Lokasi/Kelas</th>
           </tr>
         </thead>
         <tbody id="jadual-live-body" class="divide-y divide-slate-700/50">
           <tr><td colSpan="4" class="p-6 text-center text-slate-500">Memuat naik rekod hari ini...</td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- ================= MODAL PILIH SUBJEK ================= -->
+  <div id="subject-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-5">
+      <div class="flex justify-between items-start gap-3 mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-blue-300">Pilih Subjek</h3>
+          <p class="text-xs text-slate-400">Selepas subjek dipilih, kamera akan diaktifkan.</p>
+        </div>
+        <button onclick="tutupModalSubjek()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <div id="butang-subjek" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL SEMAK STATUS LOKASI ================= -->
+  <div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-2xl bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-5">
+      <div class="flex justify-between items-start gap-3 mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-indigo-300">Semak Status Lokasi Berdasarkan Masa</h3>
+          <p class="text-xs text-slate-400">Pilih lokasi dan masa untuk menyemak rekod keberadaan yang tersedia.</p>
+        </div>
+        <button onclick="tutupSemakanStatusLokasi()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Lokasi / Kelas:</label>
+          <select id="select-lokasi-semak" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+            <option value="">-- Pilih lokasi --</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Tarikh & Masa:</label>
+          <input type="datetime-local" id="input-masa-semak" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2 justify-end">
+        <button onclick="tutupSemakanStatusLokasi()" class="bg-slate-700 hover:bg-slate-600 text-sm px-4 py-2 rounded-xl font-semibold text-slate-200">
+          Tutup
+        </button>
+        <button onclick="semakStatusLokasi()" class="bg-indigo-600 hover:bg-indigo-500 text-sm px-4 py-2 rounded-xl font-semibold text-white">
+          Semak
+        </button>
+      </div>
+
+      <div id="hasil-semak-lokasi" class="hidden mt-4 rounded-xl border border-slate-700 bg-slate-900/80 p-4">
+        <p class="text-sm font-bold text-slate-200 mb-2">Hasil Semakan</p>
+        <div id="hasil-semak-lokasi-kandungan" class="text-sm text-slate-300"></div>
+      </div>
     </div>
   </div>
 
@@ -128,12 +192,44 @@
     // ⚠️ TAMPAL WEB APP URL DARIPADA GOOGLE APPS SCRIPT DI SINI:
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-p-SoAAgkEgFvHdm0rEVR1YTEAdd-86xNnwqOigL4lww1Lm1QbVC_YXeV6YVhFb-o8A/exec";
 
+    const SENARAI_SUBJEK = [
+      "Bahasa Melayu",
+      "Bahasa Inggeris",
+      "Matematik",
+      "Sains",
+      "Pendidikan Agama Islam",
+      "Bahasa Arab",
+      "Muzik",
+      "Seni Visual",
+      "Sejarah",
+      "Moral",
+      "RBT",
+      "PJK"
+    ];
+
+    const SENARAI_LOKASI = [
+      "Padang",
+      "Makmal Sains",
+      "Makmal Komputer",
+      "Pusat Sumber",
+      "Bilik jQaf",
+      "Bilik Kaunseling",
+      "Bilik Pemulihan",
+      "Surau",
+      "Dewan Kesatria",
+      "Dewan Sri Gesa"
+    ];
+
     let senaraiGuruGlobal = [];
     let dataLiveGlobal = [];
     let statusSemasa = "";
+    let subjekSemasa = "";
     let html5QrcodeScanner = null;
 
     window.onload = function() {
+      isiButangSubjek();
+      isiDropdownLokasiSemakan();
+
       const savedGuru = localStorage.getItem('atlas_guru');
       if (savedGuru) {
         setupPaparanGuru(JSON.parse(savedGuru));
@@ -185,17 +281,68 @@
       }
     }
 
-    // 📸 Kamera Live Stream Berfungsi 100% di GitHub Pages!
-    function mulaImbas(status) {
-      statusSemasa = status;
+    function isiButangSubjek() {
+      const kontainer = document.getElementById('butang-subjek');
+      kontainer.innerHTML = "";
+
+      SENARAI_SUBJEK.forEach(subjek => {
+        const button = document.createElement('button');
+        button.type = "button";
+        button.className = "bg-slate-900 hover:bg-slate-700 border border-slate-600 hover:border-indigo-500 text-white font-semibold py-3 px-3 rounded-xl text-sm transition duration-200";
+        button.textContent = subjek;
+        button.onclick = () => pilihSubjekDanImbas(subjek);
+        kontainer.appendChild(button);
+      });
+    }
+
+    function isiDropdownLokasiSemakan() {
+      const select = document.getElementById('select-lokasi-semak');
+      select.innerHTML = '<option value="">-- Pilih lokasi --</option>';
+
+      SENARAI_LOKASI.forEach(lokasi => {
+        select.innerHTML += `<option value="${lokasi}">${lokasi}</option>`;
+      });
+    }
+
+    function bukaModalSubjek() {
+      document.getElementById('subject-modal').classList.remove('hidden');
+      document.getElementById('subject-modal').classList.add('flex');
+    }
+
+    function tutupModalSubjek() {
+      document.getElementById('subject-modal').classList.add('hidden');
+      document.getElementById('subject-modal').classList.remove('flex');
+      subjekSemasa = "";
+      statusSemasa = "";
+    }
+
+    function pilihSubjekDanImbas(subjek) {
+      subjekSemasa = subjek;
+      tutupModalSubjek();
+      aktifkanScanner();
+    }
+
+    function aktifkanScanner() {
       document.getElementById('butang-tindakan').classList.add('hidden');
       document.getElementById('scanner-container').classList.remove('hidden');
-      
+
       const label = document.getElementById('label-status-scan');
-      label.innerText = `IMBAS ${status}`;
-      label.className = status === 'MASUK' 
+      label.innerText = statusSemasa === 'MASUK'
+        ? 'IMBAS MASUK'
+        : 'IMBAS KELUAR';
+
+      label.className = statusSemasa === 'MASUK'
         ? 'font-bold text-sm px-3 py-1 rounded-full bg-emerald-900/50 text-emerald-300 border border-emerald-500/30'
         : 'font-bold text-sm px-3 py-1 rounded-full bg-rose-900/50 text-rose-300 border border-rose-500/30';
+
+      const subjekLabel = document.getElementById('label-subjek-scan');
+      if (subjekSemasa) {
+        subjekLabel.innerText = `SUBJEK: ${subjekSemasa}`;
+        subjekLabel.classList.remove('hidden');
+      } else {
+        subjekLabel.innerText = '';
+        subjekLabel.classList.add('hidden');
+      }
 
       html5QrcodeScanner = new Html5Qrcode("reader");
       html5QrcodeScanner.start(
@@ -209,23 +356,48 @@
       });
     }
 
-    function tutupImbas() {
-      if (html5QrcodeScanner) {
-        html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(err => console.log(err));
+    // 📸 Kamera Live Stream Berfungsi 100% di GitHub Pages!
+    function mulaImbas(status) {
+      statusSemasa = status;
+
+      // Untuk MASUK, minta subjek dahulu sebelum kamera diaktifkan
+      if (status === 'MASUK') {
+        bukaModalSubjek();
+        return;
       }
-      document.getElementById('scanner-container').classList.add('hidden');
-      document.getElementById('butang-tindakan').classList.remove('hidden');
+
+      // Untuk KELUAR, terus aktifkan kamera
+      aktifkanScanner();
     }
 
-function onScanSuccess(decodedText) {
-  mainkanBunyiBeep();
+    function tutupImbas() {
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop()
+          .then(() => html5QrcodeScanner.clear())
+          .catch(err => console.log(err));
+      }
+      html5QrcodeScanner = null;
+      document.getElementById('scanner-container').classList.add('hidden');
+      document.getElementById('butang-tindakan').classList.remove('hidden');
+      document.getElementById('label-subjek-scan').classList.add('hidden');
+      subjekSemasa = "";
+      statusSemasa = "";
+    }
+
+    function onScanSuccess(decodedText) {
+      mainkanBunyiBeep();
       tutupImbas();
+
       const guru = JSON.parse(localStorage.getItem('atlas_guru'));
+
       const payload = {
         nama: guru.nama,
         emel: guru.emel,
         status: statusSemasa,
-        kodKelas: decodedText
+        subjek: subjekSemasa,
+        kodKelas: decodedText,
+        kodLokasi: decodedText,
+        lokasi: decodedText
       };
 
       paparToast("⌛ MEMPROSES...", "Menyemak status keberadaan...");
@@ -238,10 +410,8 @@ function onScanSuccess(decodedText) {
       .then(res => res.json())
       .then(response => {
         if (response.status === "success") {
-          // Jika Berjaya atau Auto-Checkout
           paparToast("BERJAYA!", response.message);
         } else {
-          // Jika Ditolak Sistem (Imbasan Bertindih / Belum Masuk)
           alert(response.message);
         }
       })
@@ -249,6 +419,7 @@ function onScanSuccess(decodedText) {
         alert("Ralat sambungan. Sila cuba lagi.");
       });
     }
+
     function onScanFailure(error) {}
 
     function bukaLiveData() {
@@ -265,11 +436,11 @@ function onScanSuccess(decodedText) {
     }
 
     function prosesDataLive(data) {
-      dataLiveGlobal = data;
+      dataLiveGlobal = Array.isArray(data) ? data : [];
       document.getElementById('label-masa-kemaskini').innerText = `Dikemas kini pada: ${new Date().toLocaleTimeString('ms-MY')}`;
       
-      const senaraiGuruUnique = [...new Set(data.map(item => item.nama))].sort();
-      const senaraiKelasUnique = [...new Set(data.map(item => item.kelas))].sort();
+      const senaraiGuruUnique = [...new Set(dataLiveGlobal.map(item => item.nama).filter(Boolean))].sort();
+      const senaraiLokasiUnique = [...new Set(dataLiveGlobal.map(item => item.lokasi || item.kelas || item.kodKelas).filter(Boolean))].sort();
       
       const selectGuru = document.getElementById('filter-guru');
       const selectKelas = document.getElementById('filter-kelas');
@@ -277,8 +448,8 @@ function onScanSuccess(decodedText) {
       selectGuru.innerHTML = '<option value="">Semua Guru</option>';
       senaraiGuruUnique.forEach(g => selectGuru.innerHTML += `<option value="${g}">${g}</option>`);
       
-      selectKelas.innerHTML = '<option value="">Semua Kelas</option>';
-      senaraiKelasUnique.forEach(k => selectKelas.innerHTML += `<option value="${k}">${k}</option>`);
+      selectKelas.innerHTML = '<option value="">Semua Lokasi/Kelas</option>';
+      senaraiLokasiUnique.forEach(k => selectKelas.innerHTML += `<option value="${k}">${k}</option>`);
 
       saringDanPaparData();
     }
@@ -288,12 +459,17 @@ function onScanSuccess(decodedText) {
       const penapisKelas = document.getElementById('filter-kelas').value;
       
       let dataSaringan = dataLiveGlobal.filter(item => {
-        return (penapisGuru === "" || item.nama === penapisGuru) && (penapisKelas === "" || item.kelas === penapisKelas);
+        const lokasiItem = item.lokasi || item.kelas || item.kodKelas || "";
+        return (penapisGuru === "" || item.nama === penapisGuru) && (penapisKelas === "" || lokasiItem === penapisKelas);
       });
 
       dataSaringan.sort((a, b) => {
-        if (a.kelas.toLowerCase() < b.kelas.toLowerCase()) return -1;
-        if (a.kelas.toLowerCase() > b.kelas.toLowerCase()) return 1;
+        const lokasiA = (a.lokasi || a.kelas || a.kodKelas || "").toLowerCase();
+        const lokasiB = (b.lokasi || b.kelas || b.kodKelas || "").toLowerCase();
+
+        if (lokasiA < lokasiB) return -1;
+        if (lokasiA > lokasiB) return 1;
+
         if (a.masa < b.masa) return -1;
         if (a.masa > b.masa) return 1;
         return 0;
@@ -312,12 +488,14 @@ function onScanSuccess(decodedText) {
           ? '<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">MASUK</span>'
           : '<span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold">KELUAR</span>';
 
+        const lokasiPaparan = row.lokasi || row.kelas || row.kodKelas || '-';
+
         tbody.innerHTML += `
           <tr class="hover:bg-slate-700/30 transition duration-150">
-            <td class="p-3 font-mono text-slate-300">${row.masa}</td>
+            <td class="p-3 font-mono text-slate-300">${row.masa || '-'}</td>
             <td class="p-3">${badgeStatus}</td>
-            <td class="p-3 font-medium text-white">${row.nama}</td>
-            <td class="p-3 text-amber-300 font-semibold">${row.kelas}</td>
+            <td class="p-3 font-medium text-white">${row.nama || '-'}</td>
+            <td class="p-3 text-amber-300 font-semibold">${lokasiPaparan}</td>
           </tr>
         `;
       });
@@ -331,6 +509,234 @@ function onScanSuccess(decodedText) {
       setTimeout(() => {
         toast.classList.add('translate-y-24', 'opacity-0');
       }, 3500);
+    }
+
+    function formatMasaInputSekarang() {
+      const sekarang = new Date();
+      const tahun = sekarang.getFullYear();
+      const bulan = String(sekarang.getMonth() + 1).padStart(2, '0');
+      const hari = String(sekarang.getDate()).padStart(2, '0');
+      const jam = String(sekarang.getHours()).padStart(2, '0');
+      const minit = String(sekarang.getMinutes()).padStart(2, '0');
+      return `${tahun}-${bulan}-${hari}T${jam}:${minit}`;
+    }
+
+    function bukaSemakanStatusLokasi() {
+      document.getElementById('hasil-semak-lokasi').classList.add('hidden');
+      document.getElementById('hasil-semak-lokasi-kandungan').innerHTML = "";
+      document.getElementById('input-masa-semak').value = formatMasaInputSekarang();
+
+      const select = document.getElementById('select-lokasi-semak');
+      if (!select.options.length || select.options[0].value !== "") {
+        isiDropdownLokasiSemakan();
+      }
+
+      document.getElementById('status-modal').classList.remove('hidden');
+      document.getElementById('status-modal').classList.add('flex');
+    }
+
+    function tutupSemakanStatusLokasi() {
+      document.getElementById('status-modal').classList.add('hidden');
+      document.getElementById('status-modal').classList.remove('flex');
+    }
+
+    function ekstrakMinitDaripadaMasa(nilaiMasa) {
+      if (!nilaiMasa || typeof nilaiMasa !== 'string') return null;
+
+      const padanan = nilaiMasa.match(/(\d{1,2}):(\d{2})/);
+      if (!padanan) return null;
+
+      const jam = parseInt(padanan[1], 10);
+      const minit = parseInt(padanan[2], 10);
+      if (Number.isNaN(jam) || Number.isNaN(minit)) return null;
+
+      return jam * 60 + minit;
+    }
+
+    function cariStatusTempatanLokasi(lokasiDipilih, masaDipilih) {
+      const rekodSama = dataLiveGlobal.filter(item => {
+        const lokasiItem = item.lokasi || item.kelas || item.kodKelas || "";
+        return lokasiItem === lokasiDipilih;
+      });
+
+      if (rekodSama.length === 0) {
+        return {
+          status: "tiada",
+          mesej: "Tiada rekod dijumpai untuk lokasi ini pada data hari ini.",
+          rekod: []
+        };
+      }
+
+      const targetMinit = ekstrakMinitDaripadaMasa(masaDipilih);
+      if (targetMinit === null) {
+        return {
+          status: "ralat",
+          mesej: "Format masa tidak sah.",
+          rekod: []
+        };
+      }
+
+      const rekodTersusun = rekodSama
+        .map(item => ({
+          ...item,
+          minitMasa: ekstrakMinitDaripadaMasa(item.masa)
+        }))
+        .filter(item => item.minitMasa !== null)
+        .sort((a, b) => a.minitMasa - b.minitMasa);
+
+      if (rekodTersusun.length === 0) {
+        return {
+          status: "tiada",
+          mesej: "Rekod masa tidak lengkap untuk lokasi ini.",
+          rekod: rekodSama
+        };
+      }
+
+      const rekodSebelumAtauSama = rekodTersusun.filter(item => item.minitMasa <= targetMinit);
+      const rekodRujukan = rekodSebelumAtauSama.length > 0
+        ? rekodSebelumAtauSama[rekodSebelumAtauSama.length - 1]
+        : rekodTersusun[0];
+
+      return {
+        status: "success",
+        mesej: "Semakan tempatan berjaya dibuat menggunakan rekod hari ini.",
+        rekod: rekodTersusun,
+        rujukan: rekodRujukan
+      };
+    }
+
+    function paparHasilSemakanLokasi(result, lokasiDipilih, masaDipilih, sumber = "server") {
+      const kotak = document.getElementById('hasil-semak-lokasi');
+      const kandungan = document.getElementById('hasil-semak-lokasi-kandungan');
+
+      kotak.classList.remove('hidden');
+
+      if (!result || (Array.isArray(result) && result.length === 0)) {
+        kandungan.innerHTML = `
+          <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <p class="text-slate-300">Tiada rekod ditemui untuk <span class="font-bold text-indigo-300">${lokasiDipilih}</span> pada masa <span class="font-bold text-indigo-300">${masaDipilih}</span>.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (result.status === "tiada" || result.status === "ralat") {
+        kandungan.innerHTML = `
+          <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <p class="text-slate-300">${result.mesej || "Tiada maklumat ditemui."}</p>
+          </div>
+        `;
+        return;
+      }
+
+      const rujukan = result.rujukan || null;
+      const senaraiRekod = result.rekod || (Array.isArray(result) ? result : []);
+
+      let html = `
+        <div class="rounded-xl border border-slate-700 bg-slate-900 p-4 mb-4">
+          <p class="text-slate-200 mb-1"><span class="text-slate-400">Lokasi:</span> <span class="font-bold text-indigo-300">${lokasiDipilih}</span></p>
+          <p class="text-slate-200 mb-1"><span class="text-slate-400">Masa disemak:</span> <span class="font-bold text-indigo-300">${masaDipilih.replace('T', ' ')}</span></p>
+          <p class="text-slate-200"><span class="text-slate-400">Sumber:</span> <span class="font-bold text-indigo-300">${sumber === "server" ? "Pelayan" : "Data tempatan"}</span></p>
+        </div>
+      `;
+
+      if (rujukan) {
+        html += `
+          <div class="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-4">
+            <p class="text-sm font-bold text-indigo-200 mb-2">Status pada masa rujukan</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+              <div><span class="text-slate-400">Masa:</span> <span class="text-white font-semibold">${rujukan.masa || '-'}</span></div>
+              <div><span class="text-slate-400">Status:</span> <span class="text-white font-semibold">${rujukan.status || '-'}</span></div>
+              <div><span class="text-slate-400">Guru:</span> <span class="text-white font-semibold">${rujukan.nama || '-'}</span></div>
+              <div><span class="text-slate-400">Subjek:</span> <span class="text-white font-semibold">${rujukan.subjek || '-'}</span></div>
+              <div class="sm:col-span-2"><span class="text-slate-400">Lokasi/Kelas:</span> <span class="text-white font-semibold">${rujukan.lokasi || rujukan.kelas || rujukan.kodKelas || '-'}</span></div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (senaraiRekod.length > 0) {
+        html += `
+          <div class="rounded-xl border border-slate-700 bg-slate-950/40 overflow-hidden">
+            <div class="px-4 py-3 border-b border-slate-700">
+              <p class="text-sm font-bold text-slate-200">Rekod berkaitan</p>
+            </div>
+            <div class="max-h-60 overflow-y-auto">
+        `;
+
+        senaraiRekod.slice().reverse().forEach(item => {
+          const badgeStatus = item.status === 'MASUK'
+            ? '<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold text-[10px]">MASUK</span>'
+            : '<span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold text-[10px]">KELUAR</span>';
+
+          html += `
+            <div class="px-4 py-3 border-b border-slate-800 last:border-b-0 text-sm">
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                ${badgeStatus}
+                <span class="text-slate-400 text-xs">${item.masa || '-'}</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-300">
+                <div><span class="text-slate-500">Guru:</span> ${item.nama || '-'}</div>
+                <div><span class="text-slate-500">Subjek:</span> ${item.subjek || '-'}</div>
+                <div class="sm:col-span-2"><span class="text-slate-500">Lokasi/Kelas:</span> ${item.lokasi || item.kelas || item.kodKelas || '-'}</div>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+
+      kandungan.innerHTML = html;
+    }
+
+    function semakStatusLokasi() {
+      const lokasi = document.getElementById('select-lokasi-semak').value;
+      const masa = document.getElementById('input-masa-semak').value;
+
+      if (!lokasi || !masa) {
+        alert("Sila pilih lokasi dan masa terlebih dahulu.");
+        return;
+      }
+
+      paparToast("⌛ MENYEMAK...", "Mencari status lokasi berdasarkan masa...");
+
+      const url = new URL(GAS_WEB_APP_URL);
+      url.searchParams.set("action", "getStatusLokasiPadaMasa");
+      url.searchParams.set("lokasi", lokasi);
+      url.searchParams.set("masa", masa);
+
+      fetch(url.toString())
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            paparHasilSemakanLokasi({ rekod: data }, lokasi, masa, "server");
+            return;
+          }
+
+          if (data && data.status === "success") {
+            if (Array.isArray(data.data) || data.rujukan) {
+              paparHasilSemakanLokasi(data, lokasi, masa, "server");
+            } else {
+              paparHasilSemakanLokasi({ rekod: [] }, lokasi, masa, "server");
+              document.getElementById('hasil-semak-lokasi-kandungan').innerHTML = `
+                <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
+                  <p class="text-slate-300">${data.message || "Semakan berjaya."}</p>
+                </div>
+              `;
+            }
+          } else {
+            const hasilTempatan = cariStatusTempatanLokasi(lokasi, masa);
+            paparHasilSemakanLokasi(hasilTempatan, lokasi, masa, "tempatan");
+          }
+        })
+        .catch(err => {
+          const hasilTempatan = cariStatusTempatanLokasi(lokasi, masa);
+          paparHasilSemakanLokasi(hasilTempatan, lokasi, masa, "tempatan");
+        });
     }
 
     // 🔊 Fungsi Penjana Bunyi Beep (Web Audio API)
