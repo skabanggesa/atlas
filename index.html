@@ -928,35 +928,144 @@ function semakStatusKelas() {
 }
     
 function paparHasilSemakanKelas(data) {
-  const box = document.getElementById('hasil-semak-kelas');
+
+  const box = document.getElementById('hasil-status-kelas');
+  const kandungan = document.getElementById('hasil-status-kelas-kandungan');
+
+  if (!box || !kandungan) {
+    console.error("Elemen hasil-status-kelas tidak dijumpai.");
+    return;
+  }
+
   box.classList.remove('hidden');
 
-  if (!data || data.status !== "success") {
-    box.innerHTML = `
-      <p class="text-rose-300 text-sm">${(data && data.message) ? data.message : "Semakan gagal."}</p>
-    `;
-    return;
-  }
 
-  if (!data.rekod || data.rekod.length === 0) {
-    box.innerHTML = `
-      <div class="rounded-xl border border-slate-700 bg-slate-950 p-4">
-        <p class="text-slate-300 text-sm">${data.message}</p>
+  if (!data || data.status !== "success") {
+
+    kandungan.innerHTML = `
+      <div class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4">
+        <p class="text-rose-300 text-sm font-semibold">
+          ${(data && data.message) ? data.message : "Semakan gagal."}
+        </p>
       </div>
     `;
+
     return;
   }
 
-  box.innerHTML = `
-    <div class="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-3">
-      <p class="text-sm font-bold text-indigo-200 mb-2">Ringkasan Kelas</p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-        <div><span class="text-slate-400">Kelas:</span> <span class="text-white font-semibold">${data.kelas}</span></div>
-        <div><span class="text-slate-400">Status:</span> <span class="text-white font-semibold">${data.statusKelas}</span></div>
-        <div><span class="text-slate-400">Lokasi semasa:</span> <span class="text-white font-semibold">${data.lokasiSemasa || '-'}</span></div>
-        <div><span class="text-slate-400">Guru semasa:</span> <span class="text-white font-semibold">${data.guruSemasa || '-'}</span></div>
-        <div><span class="text-slate-400">Subjek semasa:</span> <span class="text-white font-semibold">${data.subjekSemasa || '-'}</span></div>
-        <div><span class="text-slate-400">Masa terakhir:</span> <span class="text-white font-semibold">${data.masaSemasa || '-'}</span></div>
+
+  if (!data.rekod || data.rekod.length === 0) {
+
+    kandungan.innerHTML = `
+      <div class="rounded-xl border border-slate-700 bg-slate-950 p-4">
+        <p class="text-slate-300 text-sm">
+          ${data.message || "Tiada rekod dijumpai."}
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  kandungan.innerHTML = `
+
+    <div class="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4">
+
+      <p class="text-indigo-300 font-bold mb-3">
+        📚 STATUS KELAS ${data.kelas}
+      </p>
+
+
+      <div class="space-y-2 text-sm">
+
+        <p>
+          <span class="text-slate-400">Status:</span>
+          <span class="text-white font-bold">
+            ${data.statusKelas || '-'}
+          </span>
+        </p>
+
+
+        <p>
+          <span class="text-slate-400">📍 Lokasi:</span>
+          <span class="text-white font-semibold">
+            ${data.lokasiSemasa || '-'}
+          </span>
+        </p>
+
+
+        <p>
+          <span class="text-slate-400">👨‍🏫 Guru:</span>
+          <span class="text-white font-semibold">
+            ${data.guruSemasa || '-'}
+          </span>
+        </p>
+
+
+        <p>
+          <span class="text-slate-400">📖 Subjek:</span>
+          <span class="text-white font-semibold">
+            ${data.subjekSemasa || '-'}
+          </span>
+        </p>
+
+
+        <p>
+          <span class="text-slate-400">⏰ Masa:</span>
+          <span class="text-white font-semibold">
+            ${data.masaSemasa || '-'}
+          </span>
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="mt-4">
+
+      <p class="text-slate-300 text-sm font-bold mb-2">
+        Rekod Imbasan Kelas
+      </p>
+
+
+      <div class="space-y-2 max-h-60 overflow-y-auto">
+
+      ${
+        data.rekod.map(r => `
+
+          <div class="bg-slate-800 rounded-xl p-3 text-sm">
+
+            <div>
+              ⏰ ${r.masa}
+            </div>
+
+            <div>
+              👨‍🏫 ${r.nama}
+            </div>
+
+            <div>
+              📍 ${r.lokasi}
+            </div>
+
+            <div>
+              📖 ${r.subjek}
+            </div>
+
+            <div>
+              Status:
+              <span class="${
+                r.status === "MASUK"
+                ? "text-emerald-300"
+                : "text-rose-300"
+              } font-bold">
+                ${r.status}
+              </span>
+            </div>
+          </div>
+        `).join('')
+      }
       </div>
     </div>
   `;
