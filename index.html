@@ -1,334 +1,300 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ATLAS Scanner</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-center items-center p-4 font-sans">
-
-  <!-- ================= SKRIN 1: LOG MASUK ================= -->
-  <div id="login-screen" class="w-full max-w-md bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700 hidden">
-    <div class="text-center mb-6">
-      <h1 class="text-2xl font-bold text-blue-400">⚡ ATLAS SCANNER</h1>
-      <p class="text-slate-400 text-sm mt-1">Sila daftarkan telefon ini sekali sahaja</p>
-    </div>
-    
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium mb-1 text-slate-300">Pilih Nama Guru:</label>
-        <select id="select-guru" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-xl text-white focus:outline-none focus:border-blue-500">
-          <option value="">-- Memuat naik senarai... --</option>
-        </select>
-      </div>
-      
-      <div>
-        <label class="block text-sm font-medium mb-1 text-slate-300">PIN Keselamatan (4 Angka):</label>
-        <input type="password" id="input-pin" maxlength="4" placeholder="••••" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-xl text-center text-xl tracking-widest text-white focus:outline-none focus:border-blue-500">
-      </div>
-      
-      <button onclick="logMasuk()" class="w-full bg-blue-600 hover:bg-blue-500 font-semibold py-3 rounded-xl transition duration-200 shadow-lg shadow-blue-600/30">
-        Simpan & Masuk
-      </button>
-    </div>
-  </div>
-
-  <!-- ================= SKRIN 2: DASHBOARD PENGIMBAS ================= -->
-  <div id="app-screen" class="w-full max-w-md bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700 hidden">
-    <div class="flex justify-between items-center border-b border-slate-700 pb-4 mb-4">
-      <div>
-        <div class="flex items-center gap-2">
-          <p class="text-xs text-slate-400">Selamat Kembali,</p>
-          <span id="badge-peranan" class="hidden text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold">ADMIN</span>
-        </div>
-        <h2 id="paparan-nama" class="text-lg font-bold text-emerald-400">Cikgu...</h2>
-      </div>
-      <button onclick="tukarGuru()" class="text-xs text-slate-400 hover:text-red-400 underline">Tukar Guru</button>
-    </div>
-
-    <button id="btn-admin-panel" onclick="bukaLiveData()" class="hidden w-full mb-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-200 shadow-lg flex items-center justify-center gap-2 border border-amber-500/30">
-      <span>📊 RADAR KEBERADAAN GURU (LIVE)</span>
-    </button>
-
-<!-- Butang tambahan: semakan status lokasi berdasarkan masa -->
-<button onclick="bukaSemakanStatusLokasi()" class="w-full mb-8 bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-500 hover:to-violet-600 text-white font-bold py-3 px-4 rounded-xl text-sm transition duration-200 shadow-lg flex items-center justify-center gap-2 border border-indigo-500/30">
-  <span>🔎 SEMAK STATUS LOKASI (BERDASARKAN MASA)</span>
-</button>
-
-    <div id="butang-tindakan" class="grid grid-cols-2 gap-4 mb-2">
-      <button onclick="mulaImbas('MASUK')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-6 rounded-2xl text-lg transition duration-200 shadow-lg shadow-emerald-600/30 flex flex-col items-center justify-center gap-1">
-        <span>🟢 MASUK</span>
-        <span class="text-xs font-normal opacity-80">Imbas Masuk Kelas / Lokasi</span>
-      </button>
-      <button onclick="mulaImbas('KELUAR')" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-6 rounded-2xl text-lg transition duration-200 shadow-lg shadow-rose-600/30 flex flex-col items-center justify-center gap-1">
-        <span>🔴 KELUAR</span>
-        <span class="text-xs font-normal opacity-80">Imbas Keluar Kelas / Lokasi</span>
-      </button>
-    </div>
-
-    <!-- Kotak Pengimbas Kamera Live Stream -->
-    <div id="scanner-container" class="hidden flex flex-col items-center">
-      <div class="w-full flex justify-between items-center mb-2">
-        <div class="flex flex-col gap-2">
-          <span id="label-status-scan" class="font-bold text-sm px-3 py-1 rounded-full bg-blue-900/50 text-blue-300 border border-blue-500/30"></span>
-          <span id="label-subjek-scan" class="hidden font-semibold text-xs px-3 py-1 rounded-full bg-slate-700 text-slate-200 border border-slate-600"></span>
-        </div>
-        <button onclick="tutupImbas()" class="text-sm text-rose-400 hover:text-rose-300 font-semibold">✕ Batal</button>
-      </div>
-      <div id="reader" class="w-full bg-black rounded-xl overflow-hidden border-2 border-slate-600"></div>
-    </div>
-  </div>
-
-  <!-- ================= SKRIN 3: PANEL ADMIN ================= -->
-  <div id="admin-screen" class="w-full max-w-2xl bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700 hidden flex flex-col max-h-[90vh]">
-    <div class="flex justify-between items-center border-b border-slate-700 pb-4 mb-4">
-      <div>
-        <h2 class="text-lg font-bold text-amber-400">📊 Radar Keberadaan (Hari Ini)</h2>
-        <p id="label-masa-kemaskini" class="text-xs text-slate-400">Memuat naik data...</p>
-      </div>
-      <button onclick="tutupLiveData()" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg font-semibold text-slate-300">Kembali</button>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-      <div>
-        <label class="block text-xs text-slate-400 mb-1">Saring Guru:</label>
-        <select id="filter-guru" onchange="saringDanPaparData()" class="w-full p-2 bg-slate-900 border border-slate-600 rounded-lg text-xs text-white focus:outline-none focus:border-amber-500">
-          <option value="">Semua Guru</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs text-slate-400 mb-1">Saring Lokasi/Kelas:</label>
-        <select id="filter-kelas" onchange="saringDanPaparData()" class="w-full p-2 bg-slate-900 border border-slate-600 rounded-lg text-xs text-white focus:outline-none focus:border-amber-500">
-          <option value="">Semua Lokasi/Kelas</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="overflow-y-auto flex-1 border border-slate-700 rounded-xl">
-      <table class="w-full text-left border-collapse text-xs">
-        <thead>
-          <tr class="bg-slate-900/80 text-slate-400 border-b border-slate-700 sticky top-0">
-            <th class="p-3">Masa</th>
-            <th class="p-3">Status</th>
-            <th class="p-3">Nama Guru</th>
-            <th class="p-3">Lokasi/Kelas</th>
-          </tr>
-        </thead>
-        <tbody id="jadual-live-body" class="divide-y divide-slate-700/50">
-          <tr><td colSpan="4" class="p-6 text-center text-slate-500">Memuat naik rekod hari ini...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ================= MODAL PILIH SUBJEK ================= -->
-  <div id="subject-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-5">
-      <div class="flex justify-between items-start gap-3 mb-4">
+<body class="min-h-screen bg-slate-950 text-white font-sans antialiased">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-5xl grid lg:grid-cols-[380px_1fr] gap-6">
+      <!-- Sidebar / Branding -->
+      <aside class="bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl p-6 lg:p-8 flex flex-col justify-between">
         <div>
-          <h3 class="text-lg font-bold text-blue-300">Pilih Subjek</h3>
-          <p class="text-xs text-slate-400">Selepas subjek dipilih, kamera akan diaktifkan.</p>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold tracking-wider">
+            <span>⚡</span>
+            <span>ATLAS SCANNER</span>
+          </div>
+          <h1 class="mt-5 text-3xl lg:text-4xl font-black leading-tight">
+            Attendance Tracking for Learning and Academic Sessions
+          </h1>
+          <p class="mt-4 text-slate-300 text-sm leading-relaxed">
+            Sistem imbasan keberadaan guru, kelas, subjek dan lokasi PdP dalam satu aliran yang ringkas.
+          </p>
+
+          <div class="mt-6 space-y-3 text-sm">
+            <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-800/80 border border-slate-700">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-300">1</div>
+              <div>
+                <p class="font-semibold">Pilih kelas</p>
+                <p class="text-slate-400">1 CEMERLANG hingga 6 GEMILANG.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-800/80 border border-slate-700">
+              <div class="w-9 h-9 rounded-xl bg-indigo-500/15 flex items-center justify-center text-indigo-300">2</div>
+              <div>
+                <p class="font-semibold">Pilih subjek</p>
+                <p class="text-slate-400">Kemudian aktifkan kamera untuk imbas QR lokasi.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-800/80 border border-slate-700">
+              <div class="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-300">3</div>
+              <div>
+                <p class="font-semibold">Semak status kelas</p>
+                <p class="text-slate-400">Cari kelas berada di mana, bersama guru siapa, dan subjek apa.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-5 border-t border-slate-800 text-xs text-slate-500">
+          <p>Versi asas untuk bina semula aplikasi.</p>
+          <p class="mt-1">Gunakan Google Apps Script sebagai backend apabila siap.</p>
+        </div>
+      </aside>
+
+      <!-- Main App -->
+      <main class="bg-slate-900/70 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
+        <!-- Top Bar -->
+        <div class="px-5 lg:px-7 py-5 border-b border-slate-800 flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Dashboard</p>
+            <h2 class="text-xl font-bold text-emerald-300">Selamat datang ke ATLAS</h2>
+          </div>
+          <span id="badge-mode" class="hidden text-[11px] px-3 py-1 rounded-full border font-bold tracking-wider"></span>
+        </div>
+
+        <!-- Content -->
+        <div class="p-5 lg:p-7 space-y-5">
+          <!-- Login card -->
+          <section id="login-screen" class="bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
+            <div class="mb-5">
+              <h3 class="text-lg font-bold text-blue-300">Log Masuk Guru</h3>
+              <p class="text-sm text-slate-400 mt-1">Pilih nama guru dan masukkan PIN untuk mula.</p>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label for="select-guru" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nama Guru</label>
+                <select id="select-guru" class="w-full rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500">
+                  <option value="">-- Memuat naik senarai --</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="input-pin" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">PIN</label>
+                <input id="input-pin" type="password" maxlength="4" placeholder="••••" class="w-full rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 text-center tracking-[0.4em] text-xl focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500" />
+              </div>
+
+              <button onclick="logMasuk()" class="w-full rounded-2xl bg-blue-600 hover:bg-blue-500 transition px-4 py-3 font-bold shadow-lg shadow-blue-600/20">
+                Simpan & Masuk
+              </button>
+            </div>
+          </section>
+
+          <!-- App screen -->
+          <section id="app-screen" class="hidden space-y-5">
+            <div class="grid md:grid-cols-[1fr_auto] gap-4 items-center bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
+              <div>
+                <p class="text-xs text-slate-500">Selamat kembali</p>
+                <div class="flex flex-wrap items-center gap-2 mt-1">
+                  <h3 id="paparan-nama" class="text-2xl font-extrabold text-white">Cikgu...</h3>
+                  <span id="badge-peranan" class="hidden text-[10px] bg-amber-500/15 text-amber-300 border border-amber-500/25 px-2 py-1 rounded-full font-bold">ADMIN</span>
+                </div>
+                <p class="text-sm text-slate-400 mt-1">Pilih tindakan di bawah untuk mula imbasan.</p>
+              </div>
+              <button onclick="tukarGuru()" class="text-sm text-slate-300 hover:text-rose-300 underline underline-offset-4">Tukar Guru</button>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+              <button onclick="mulaMasuk()" class="rounded-3xl bg-emerald-600 hover:bg-emerald-500 transition p-5 text-left shadow-lg shadow-emerald-600/20">
+                <div class="text-3xl">🟢</div>
+                <div class="mt-3">
+                  <p class="text-lg font-black">MASUK</p>
+                  <p class="text-sm text-emerald-50/80">Pilih kelas, subjek dan scan lokasi.</p>
+                </div>
+              </button>
+
+              <button onclick="mulaKeluar()" class="rounded-3xl bg-rose-600 hover:bg-rose-500 transition p-5 text-left shadow-lg shadow-rose-600/20">
+                <div class="text-3xl">🔴</div>
+                <div class="mt-3">
+                  <p class="text-lg font-black">KELUAR</p>
+                  <p class="text-sm text-rose-50/80">Scan lokasi yang sama untuk keluar.</p>
+                </div>
+              </button>
+            </div>
+
+            <button onclick="bukaSemakanKelas()" class="w-full rounded-3xl bg-indigo-600 hover:bg-indigo-500 transition p-5 text-left shadow-lg shadow-indigo-600/20">
+              <div class="text-2xl">🔎</div>
+              <div class="mt-2">
+                <p class="text-lg font-black">SEMAK STATUS KELAS</p>
+                <p class="text-sm text-indigo-50/80">Cari di mana kelas berada, dengan guru siapa, dan subjek apa.</p>
+              </div>
+            </button>
+
+            <!-- Scanner card -->
+            <section id="scanner-card" class="hidden bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
+              <div class="flex items-center justify-between gap-3 mb-4">
+                <div>
+                  <span id="label-status-scan" class="inline-flex text-xs font-bold px-3 py-1 rounded-full border"></span>
+                  <span id="label-kelas-scan" class="hidden inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border"></span>
+                  <span id="label-subjek-scan" class="hidden inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border"></span>
+                </div>
+                <button onclick="tutupScanner()" class="text-sm text-slate-400 hover:text-rose-300">✕ Batal</button>
+              </div>
+              <div id="reader" class="w-full overflow-hidden rounded-2xl border border-slate-700 bg-black min-h-[280px]"></div>
+            </section>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal: Pilih Kelas -->
+  <div id="class-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl p-5 lg:p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 class="text-xl font-bold text-blue-300">Pilih Kelas</h3>
+          <p class="text-sm text-slate-400 mt-1">Pilih kelas murid sebelum memilih subjek.</p>
+        </div>
+        <button onclick="tutupModalKelas()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+      <div id="butang-kelas" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Pilih Subjek -->
+  <div id="subject-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl p-5 lg:p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 class="text-xl font-bold text-emerald-300">Pilih Subjek</h3>
+          <p class="text-sm text-slate-400 mt-1">Selepas subjek dipilih, kamera akan diaktifkan.</p>
         </div>
         <button onclick="tutupModalSubjek()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
       </div>
-
-      <div id="butang-subjek" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+      <div id="butang-subjek" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
     </div>
   </div>
 
-<!-- ================= MODAL PILIH KELAS ================= -->
+  <!-- Modal: Semak Status Kelas -->
+  <div id="status-kelas-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="w-full max-w-lg rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl p-5 lg:p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 class="text-xl font-bold text-indigo-300">Semak Status Kelas</h3>
+          <p class="text-sm text-slate-400 mt-1">Pilih kelas untuk melihat lokasi, guru, subjek dan masa terakhir.</p>
+        </div>
+        <button onclick="tutupSemakanStatusKelas()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
 
-<div id="class-modal" 
-class="hidden fixed inset-0 bg-black/70 z-50 items-center justify-center p-4">
+      <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Kelas</label>
+      <select id="select-kelas-semak" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500">
+        <option value="">-- Pilih Kelas --</option>
+      </select>
 
-<div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 p-6">
+      <button onclick="semakStatusKelas()" class="w-full mt-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-3 font-bold shadow-lg shadow-indigo-600/20">
+        🔎 Semak
+      </button>
 
-<div class="flex justify-between items-center mb-5">
+      <div id="hasil-status-kelas" class="hidden mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+        <div id="hasil-status-kelas-kandungan"></div>
+      </div>
+    </div>
+  </div>
 
-<h2 class="text-xl font-bold text-blue-400">
-📚 PILIH KELAS
-</h2>
-
-<button 
-onclick="tutupModalKelas()"
-class="text-red-400 font-bold">
-✕
-</button>
-</div>
-<div id="butang-kelas"
-class="grid grid-cols-2 gap-3">
-</div>
-</div>
-</div>
-
-  <!-- ================= MODAL SEMAK STATUS KELAS ================= -->
-
-<div id="status-kelas-modal"
-class="hidden fixed inset-0 bg-black/70 z-50 items-center justify-center p-4">
-
-
-<div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-xl border border-slate-700 p-6">
-
-
-<div class="flex justify-between items-center mb-5">
-
-<h2 class="text-xl font-bold text-indigo-400">
-🔍 STATUS KELAS
-</h2>
-
-
-<button 
-onclick="tutupSemakanStatusKelas()"
-class="text-red-400 font-bold">
-✕
-</button>
-</div>
-
-<label class="text-sm text-slate-300">
-Pilih Kelas
-</label>
-
-<select 
-id="select-kelas-semak"
-class="w-full mt-2 p-3 rounded-xl bg-slate-900 border border-slate-600 text-white">
-
-<option value="">
--- Pilih Kelas --
-</option>
-
-</select>
-
-  <button
-onclick="semakStatusKelas()"
-class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold">
-🔎 SEMAK
-</button>
-
-<div 
-id="hasil-status-kelas"
-class="hidden mt-5 bg-slate-900 border border-slate-700 rounded-xl p-4">
-<div id="hasil-status-kelas-kandungan">
-</div>
-</div>
-</div>
-</div>
-
-  <!-- Toast Notifikasi -->
-  <div id="toast" class="fixed bottom-6 bg-emerald-500 text-slate-950 font-bold px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-24 opacity-0 flex items-center gap-3 z-50">
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-28 opacity-0 transition-all duration-300 z-50 bg-emerald-500 text-slate-950 font-bold px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
     <span class="text-2xl">✅</span>
     <div>
-      <p id="toast-title" class="text-sm">IMBASAN BERJAYA!</p>
-      <p id="toast-desc" class="text-xs font-normal">Rekod telah disimpan ke dalam sistem.</p>
+      <p id="toast-title" class="text-sm">Berjaya</p>
+      <p id="toast-desc" class="text-xs font-normal">Rekod telah dikemas kini.</p>
     </div>
   </div>
 
   <script>
-    // ⚠️ TAMPAL WEB APP URL DARIPADA GOOGLE APPS SCRIPT DI SINI:
+    // ==============================
+    // CONFIG
+    // ==============================
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-p-SoAAgkEgFvHdm0rEVR1YTEAdd-86xNnwqOigL4lww1Lm1QbVC_YXeV6YVhFb-o8A/exec";
 
+    const SENARAI_KELAS = [
+      "1 CEMERLANG",
+      "1 GEMILANG",
+      "2 CEMERLANG",
+      "2 GEMILANG",
+      "3 CEMERLANG",
+      "3 GEMILANG",
+      "4 CEMERLANG",
+      "4 GEMILANG",
+      "5 CEMERLANG",
+      "5 GEMILANG",
+      "6 CEMERLANG",
+      "6 GEMILANG"
+    ];
+
     const SENARAI_SUBJEK = [
-      "BAHASA MELAYU",
-      "BAHASA INGGERIS",
-      "MATEMATIK",
-      "SAINS",
-      "PENDIDIKAN AGAMA ISLAM",
-      "BAHASA ARAB",
-      "MUZIK",
-      "SENI VISUAL",
-      "SEJARAH",
-      "MORAL",
+      "Bahasa Melayu",
+      "Bahasa Inggeris",
+      "Matematik",
+      "Sains",
+      "Pendidikan Agama Islam",
+      "Bahasa Arab",
+      "Muzik",
+      "Seni Visual",
+      "Sejarah",
+      "Moral",
       "RBT",
       "PJK"
     ];
 
-  const SENARAI_KELAS = [
-  "1 CEMERLANG",
-  "1 GEMILANG",
-  "2 CEMERLANG",
-  "2 GEMILANG",
-  "3 CEMERLANG",
-  "3 GEMILANG",
-  "4 CEMERLANG",
-  "4 GEMILANG",
-  "5 CEMERLANG",
-  "5 GEMILANG",
-  "6 CEMERLANG",
-  "6 GEMILANG"
-];
-
-    const SENARAI_LOKASI = [
-      "PADANG",
-      "MAKMAL SAINS",
-      "MAKMAL KOMPUTER",
-      "PUSAT SUMBER",
-      "BILIK jQAF",
-      "BILIK KAUNSELING",
-      "BILIK PEMULIHAN",
-      "SURAU",
-      "DEWAN KESATRIA",
-      "DEWAN SRI GESA"
-    ];
-
+    // ==============================
+    // STATE
+    // ==============================
     let senaraiGuruGlobal = [];
-    let dataLiveGlobal = [];
     let statusSemasa = "";
-    let subjekSemasa = "";
     let kelasSemasa = "";
+    let subjekSemasa = "";
     let lokasiSemasa = "";
     let html5QrcodeScanner = null;
+    let modeScanner = ""; // MASUK / KELUAR
 
-window.onload = function() {
-  isiButangKelas();
-  isiButangSubjek();
-  isiDropdownKelasSemakan();
-
-      const savedGuru = localStorage.getItem('atlas_guru');
-      if (savedGuru) {
-        setupPaparanGuru(JSON.parse(savedGuru));
-      } else {
-        document.getElementById('login-screen').classList.remove('hidden');
-        fetch(`${GAS_WEB_APP_URL}?action=getSenaraiGuru`)
-          .then(res => res.json())
-          .then(data => isiDropdownGuru(data));
-      }
+    // ==============================
+    // INIT
+    // ==============================
+    window.onload = function () {
+      isiButangKelas();
+      isiButangSubjek();
+      isiDropdownKelasSemakan();
+      muatSenaraiGuru();
     };
 
-    function isiDropdownKelasSemakan(){
-const select =
-document.getElementById('select-kelas-semak');
-
-if(!select) return;
-
-select.innerHTML =
-'<option value="">-- Pilih Kelas --</option>';
-
-SENARAI_KELAS.forEach(kelas=>{
-select.innerHTML +=
-`
-<option value="${kelas}">
-${kelas}
-</option>
-`;
-});
-
+function muatSenaraiGuru() {
+  fetch(`${GAS_WEB_APP_URL}?action=getSenaraiGuru`)
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length) {
+        senaraiGuruGlobal = data;
+        isiDropdownGuru(data);
+      } else {
+        isiDropdownGuruDemo();
+      }
+    })
+    .catch(() => isiDropdownGuruDemo());
 }
 
-function bukaSemakanStatusLokasi() {
-  document.getElementById('hasil-semak-lokasi').classList.add('hidden');
-  document.getElementById('hasil-semak-lokasi-kandungan').innerHTML = "";
-  document.getElementById('input-masa-semak').value = formatMasaInputSekarang();
+    function isiDropdownGuruDemo() {
+      senaraiGuruGlobal = [
+        { nama: "Cikgu Ali", emel: "ali@example.com", pin: "1234", peranan: "GURU" },
+        { nama: "Cikgu Siti", emel: "siti@example.com", pin: "4321", peranan: "ADMIN" }
+      ];
+      isiDropdownGuru(senaraiGuruGlobal);
+    }
 
-  // Panggil fungsi isi dropdown secara terus tanpa sebarang syarat
-  isiDropdownLokasiSemakan();
-
-  document.getElementById('status-modal').classList.remove('hidden');
-  document.getElementById('status-modal').classList.add('flex');
-}
-    
     function isiDropdownGuru(data) {
-      senaraiGuruGlobal = data;
       const select = document.getElementById('select-guru');
       select.innerHTML = '<option value="">-- Pilih Nama Anda --</option>';
       data.forEach((g, index) => {
@@ -336,49 +302,106 @@ function bukaSemakanStatusLokasi() {
       });
     }
 
+    // ==============================
+    // LOGIN
+    // ==============================
     function logMasuk() {
       const index = document.getElementById('select-guru').value;
-      const pin = document.getElementById('input-pin').value;
-      if (index === "" || pin === "") { alert("Sila lengkapkan maklumat!"); return; }
+      const pin = document.getElementById('input-pin').value.trim();
+
+      if (index === "" || !pin) {
+        alert("Sila lengkapkan maklumat!");
+        return;
+      }
 
       const guruPilihan = senaraiGuruGlobal[index];
-      if (guruPilihan.pin === pin) {
+      if (!guruPilihan) {
+        alert("Guru tidak dijumpai.");
+        return;
+      }
+
+      if (String(guruPilihan.pin).trim() === pin) {
         localStorage.setItem('atlas_guru', JSON.stringify(guruPilihan));
         setupPaparanGuru(guruPilihan);
         document.getElementById('login-screen').classList.add('hidden');
       } else {
-        alert("PIN Tidak Tepat!");
+        alert("PIN tidak tepat!");
       }
     }
 
     function setupPaparanGuru(guru) {
-      document.getElementById('paparan-nama').innerText = guru.nama;
+      document.getElementById('paparan-nama').innerText = guru.nama || 'Cikgu...';
       document.getElementById('app-screen').classList.remove('hidden');
-      if (guru.peranan && guru.peranan.toUpperCase() === "ADMIN") {
-        document.getElementById('btn-admin-panel').classList.remove('hidden');
+      document.getElementById('login-screen').classList.add('hidden');
+
+      if (String(guru.peranan || '').toUpperCase() === 'ADMIN') {
         document.getElementById('badge-peranan').classList.remove('hidden');
+        document.getElementById('badge-peranan').innerText = 'ADMIN';
+      } else {
+        document.getElementById('badge-peranan').classList.add('hidden');
       }
     }
 
     function tukarGuru() {
-      if(confirm("Log keluar?")) {
+      if (confirm("Log keluar?")) {
         localStorage.removeItem('atlas_guru');
         location.reload();
       }
     }
 
+    // ==============================
+    // BUTTONS: CLASS / SUBJECT
+    // ==============================
+    function isiButangKelas() {
+      const kontainer = document.getElementById('butang-kelas');
+      if (!kontainer) return;
+      kontainer.innerHTML = '';
+
+      SENARAI_KELAS.forEach(kelas => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'rounded-2xl border border-slate-700 bg-slate-950 hover:bg-slate-800 px-3 py-3 text-sm font-semibold transition';
+        btn.textContent = kelas;
+        btn.onclick = () => pilihKelas(kelas);
+        kontainer.appendChild(btn);
+      });
+    }
+
     function isiButangSubjek() {
       const kontainer = document.getElementById('butang-subjek');
-      kontainer.innerHTML = "";
+      if (!kontainer) return;
+      kontainer.innerHTML = '';
 
       SENARAI_SUBJEK.forEach(subjek => {
-        const button = document.createElement('button');
-        button.type = "button";
-        button.className = "bg-slate-900 hover:bg-slate-700 border border-slate-600 hover:border-indigo-500 text-white font-semibold py-3 px-3 rounded-xl text-sm transition duration-200";
-        button.textContent = subjek;
-        button.onclick = () => pilihSubjekDanImbas(subjek);
-        kontainer.appendChild(button);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'rounded-2xl border border-slate-700 bg-slate-950 hover:bg-slate-800 px-3 py-3 text-sm font-semibold transition';
+        btn.textContent = subjek;
+        btn.onclick = () => pilihSubjek(subjek);
+        kontainer.appendChild(btn);
       });
+    }
+
+    function isiDropdownKelasSemakan() {
+      const select = document.getElementById('select-kelas-semak');
+      if (!select) return;
+      select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+      SENARAI_KELAS.forEach(kelas => {
+        select.innerHTML += `<option value="${kelas}">${kelas}</option>`;
+      });
+    }
+
+    // ==============================
+    // MODALS
+    // ==============================
+    function bukaModalKelas() {
+      document.getElementById('class-modal').classList.remove('hidden');
+      document.getElementById('class-modal').classList.add('flex');
+    }
+
+    function tutupModalKelas() {
+      document.getElementById('class-modal').classList.add('hidden');
+      document.getElementById('class-modal').classList.remove('flex');
     }
 
     function bukaModalSubjek() {
@@ -386,780 +409,282 @@ function bukaSemakanStatusLokasi() {
       document.getElementById('subject-modal').classList.add('flex');
     }
 
-function tutupModalSubjek() {
-  document.getElementById('subject-modal').classList.add('hidden');
-  document.getElementById('subject-modal').classList.remove('flex');
-}
+    function tutupModalSubjek() {
+      document.getElementById('subject-modal').classList.add('hidden');
+      document.getElementById('subject-modal').classList.remove('flex');
+    }
 
-function pilihSubjekDanImbas(subjek){
- subjekSemasa=subjek;
- tutupModalSubjek();
- aktifkanScanner();
-}
+    function bukaSemakanKelas() {
+      document.getElementById('hasil-status-kelas').classList.add('hidden');
+      document.getElementById('hasil-status-kelas-kandungan').innerHTML = '';
+      document.getElementById('select-kelas-semak').value = '';
+      document.getElementById('status-kelas-modal').classList.remove('hidden');
+      document.getElementById('status-kelas-modal').classList.add('flex');
+    }
+
+    function tutupSemakanStatusKelas() {
+      document.getElementById('status-kelas-modal').classList.add('hidden');
+      document.getElementById('status-kelas-modal').classList.remove('flex');
+    }
+
+    // ==============================
+    // FLOW: MASUK / KELUAR
+    // ==============================
+    function mulaMasuk() {
+      modeScanner = 'MASUK';
+      statusSemasa = 'MASUK';
+      kelasSemasa = '';
+      subjekSemasa = '';
+      lokasiSemasa = '';
+      bukaModalKelas();
+    }
+
+    function mulaKeluar() {
+      modeScanner = 'KELUAR';
+      statusSemasa = 'KELUAR';
+      kelasSemasa = '';
+      subjekSemasa = '';
+      lokasiSemasa = '';
+      bukaModalKelas();
+    }
+
+    function pilihKelas(kelas) {
+      kelasSemasa = kelas;
+      tutupModalKelas();
+
+      if (modeScanner === 'MASUK') {
+        bukaModalSubjek();
+      } else {
+        aktifkanScanner();
+      }
+    }
+
+    function pilihSubjek(subjek) {
+      subjekSemasa = subjek;
+      tutupModalSubjek();
+      aktifkanScanner();
+    }
 
     function aktifkanScanner() {
-      document.getElementById('butang-tindakan').classList.add('hidden');
-      document.getElementById('scanner-container').classList.remove('hidden');
+      document.getElementById('scanner-card').classList.remove('hidden');
+      document.getElementById('label-status-scan').classList.remove('hidden');
+      document.getElementById('label-status-scan').className = modeScanner === 'MASUK'
+        ? 'inline-flex text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+        : 'inline-flex text-xs font-bold px-3 py-1 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-300';
+      document.getElementById('label-status-scan').innerText = modeScanner === 'MASUK' ? 'IMBAS MASUK' : 'IMBAS KELUAR';
 
-      const label = document.getElementById('label-status-scan');
-      label.innerText = statusSemasa === 'MASUK'
-        ? 'IMBAS MASUK'
-        : 'IMBAS KELUAR';
+      const labelKelas = document.getElementById('label-kelas-scan');
+      labelKelas.classList.remove('hidden');
+      labelKelas.className = 'inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300';
+      labelKelas.innerText = kelasSemasa || '-';
 
-      label.className = statusSemasa === 'MASUK'
-        ? 'font-bold text-sm px-3 py-1 rounded-full bg-emerald-900/50 text-emerald-300 border border-emerald-500/30'
-        : 'font-bold text-sm px-3 py-1 rounded-full bg-rose-900/50 text-rose-300 border border-rose-500/30';
+      const labelSubjek = document.getElementById('label-subjek-scan');
+      labelSubjek.classList.remove('hidden');
+      labelSubjek.className = 'inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300';
+      labelSubjek.innerText = subjekSemasa || '-';
 
-      const subjekLabel = document.getElementById('label-subjek-scan');
-      if (subjekSemasa) {
-        subjekLabel.innerText = `SUBJEK: ${subjekSemasa}`;
-        subjekLabel.classList.remove('hidden');
-      } else {
-        subjekLabel.innerText = '';
-        subjekLabel.classList.add('hidden');
+      // Reset scanner if exists
+      if (html5QrcodeScanner) {
+        try {
+          html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(() => {});
+        } catch (_) {}
+        html5QrcodeScanner = null;
       }
 
       html5QrcodeScanner = new Html5Qrcode("reader");
       html5QrcodeScanner.start(
-        { facingMode: "environment" },
+        { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         onScanSuccess,
         onScanFailure
-      ).catch(err => {
-        alert("Sila benarkan kebenaran kamera pada pelayar anda!");
-        tutupImbas();
+      ).catch(() => {
+        alert('Sila benarkan kebenaran kamera pada pelayar anda!');
+        tutupScanner();
       });
     }
 
-    // 📸 Kamera Live Stream Berfungsi 100% di GitHub Pages!
-function mulaImbas(status){
-
-  statusSemasa=status;
-
-  kelasSemasa="";
-  subjekSemasa="";
-  lokasiSemasa="";
-
-
-  bukaModalKelas();
-
-}
-
-function tutupImbas() {
-  if (html5QrcodeScanner) {
-    html5QrcodeScanner.stop()
-      .then(() => html5QrcodeScanner.clear())
-      .catch(err => console.log(err));
-  }
-  html5QrcodeScanner = null;
-  document.getElementById('scanner-container').classList.add('hidden');
-  document.getElementById('butang-tindakan').classList.remove('hidden');
-  document.getElementById('label-subjek-scan').classList.add('hidden');
-}
-
-    function bukaModalKelas(){
-
-  document.getElementById('class-modal')
-  .classList.remove('hidden');
-
-
-  document.getElementById('class-modal')
-  .classList.add('flex');
-
-}
-
-
-
-function tutupModalKelas(){
-
-  document.getElementById('class-modal')
-  .classList.add('hidden');
-
-
-  document.getElementById('class-modal')
-  .classList.remove('flex');
-
-}
-
-function onScanSuccess(decodedText) {
-  mainkanBunyiBeep();
-
-  const guru = JSON.parse(localStorage.getItem('atlas_guru'));
-  const statusHantar = statusSemasa;
-  const subjekHantar = subjekSemasa;
-
-  tutupImbas();
-
-lokasiSemasa = decodedText;
-
-const payload = {
-    nama: guru.nama,
-    emel: guru.emel,
-    status: statusHantar,
-    kelas: kelasSemasa,
-    subjek: subjekHantar,
-    lokasi: lokasiSemasa
-};
-
-  paparToast("⌛ MEMPROSES...", "Menyemak status keberadaan...");
-
-  fetch(GAS_WEB_APP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(response => {
-    if (response.status === "success") {
-      paparToast("BERJAYA!", response.message);
-    } else {
-      alert(response.message);
-    }
-
-statusSemasa = "";
-kelasSemasa = "";
-subjekSemasa = "";
-lokasiSemasa = "";
-  })
-  .catch(err => {
-    alert("Ralat sambungan. Sila cuba lagi.");
-statusSemasa = "";
-kelasSemasa = "";
-subjekSemasa = "";
-lokasiSemasa = "";
-  });
-}
-    function onScanFailure(error) {}
-
-    function bukaLiveData() {
-      document.getElementById('app-screen').classList.add('hidden');
-      document.getElementById('admin-screen').classList.remove('hidden');
-      fetch(`${GAS_WEB_APP_URL}?action=getLiveDataHariIni`)
-        .then(res => res.json())
-        .then(data => prosesDataLive(data));
-    }
-
-    function tutupLiveData() {
-      document.getElementById('admin-screen').classList.add('hidden');
-      document.getElementById('app-screen').classList.remove('hidden');
-    }
-
-    function prosesDataLive(data) {
-      dataLiveGlobal = Array.isArray(data) ? data : [];
-      document.getElementById('label-masa-kemaskini').innerText = `Dikemas kini pada: ${new Date().toLocaleTimeString('ms-MY')}`;
-      
-      const senaraiGuruUnique = [...new Set(dataLiveGlobal.map(item => item.nama).filter(Boolean))].sort();
-      const senaraiLokasiUnique = [...new Set(dataLiveGlobal.map(item => item.lokasi || item.kelas || item.kodKelas).filter(Boolean))].sort();
-      
-      const selectGuru = document.getElementById('filter-guru');
-      const selectKelas = document.getElementById('filter-kelas');
-      
-      selectGuru.innerHTML = '<option value="">Semua Guru</option>';
-      senaraiGuruUnique.forEach(g => selectGuru.innerHTML += `<option value="${g}">${g}</option>`);
-      
-      selectKelas.innerHTML = '<option value="">Semua Lokasi/Kelas</option>';
-      senaraiLokasiUnique.forEach(k => selectKelas.innerHTML += `<option value="${k}">${k}</option>`);
-
-      saringDanPaparData();
-    }
-
-    function saringDanPaparData() {
-      const penapisGuru = document.getElementById('filter-guru').value;
-      const penapisKelas = document.getElementById('filter-kelas').value;
-      
-      let dataSaringan = dataLiveGlobal.filter(item => {
-        const lokasiItem = item.lokasi || item.kelas || item.kodKelas || "";
-        return (penapisGuru === "" || item.nama === penapisGuru) && (penapisKelas === "" || lokasiItem === penapisKelas);
-      });
-
-      dataSaringan.sort((a, b) => {
-        const lokasiA = (a.lokasi || a.kelas || a.kodKelas || "").toLowerCase();
-        const lokasiB = (b.lokasi || b.kelas || b.kodKelas || "").toLowerCase();
-
-        if (lokasiA < lokasiB) return -1;
-        if (lokasiA > lokasiB) return 1;
-
-        if (a.masa < b.masa) return -1;
-        if (a.masa > b.masa) return 1;
-        return 0;
-      });
-
-      const tbody = document.getElementById('jadual-live-body');
-      tbody.innerHTML = "";
-
-      if (dataSaringan.length === 0) {
-        tbody.innerHTML = '<tr><td colSpan="4" class="p-6 text-center text-slate-500">Tiada rekod keberadaan dijumpai.</td></tr>';
-        return;
+    function tutupScanner() {
+      if (html5QrcodeScanner) {
+        try {
+          html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(() => {});
+        } catch (_) {}
       }
-
-      dataSaringan.forEach(row => {
-        const badgeStatus = row.status === 'MASUK'
-          ? '<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">MASUK</span>'
-          : '<span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold">KELUAR</span>';
-
-        const lokasiPaparan = row.lokasi || row.kelas || row.kodKelas || '-';
-
-        tbody.innerHTML += `
-          <tr class="hover:bg-slate-700/30 transition duration-150">
-            <td class="p-3 font-mono text-slate-300">${row.masa || '-'}</td>
-            <td class="p-3">${badgeStatus}</td>
-            <td class="p-3 font-medium text-white">${row.nama || '-'}</td>
-            <td class="p-3 text-amber-300 font-semibold">${lokasiPaparan}</td>
-          </tr>
-        `;
-      });
+      html5QrcodeScanner = null;
+      document.getElementById('scanner-card').classList.add('hidden');
     }
 
-    function paparToast(tajuk, deskripsi) {
-      document.getElementById('toast-title').innerText = tajuk;
-      document.getElementById('toast-desc').innerText = deskripsi;
-      const toast = document.getElementById('toast');
-      toast.classList.remove('translate-y-24', 'opacity-0');
-      setTimeout(() => {
-        toast.classList.add('translate-y-24', 'opacity-0');
-      }, 3500);
+    function onScanFailure(error) {
+      // sengaja kosong
     }
 
-    function formatMasaInputSekarang() {
-      const sekarang = new Date();
-      const tahun = sekarang.getFullYear();
-      const bulan = String(sekarang.getMonth() + 1).padStart(2, '0');
-      const hari = String(sekarang.getDate()).padStart(2, '0');
-      const jam = String(sekarang.getHours()).padStart(2, '0');
-      const minit = String(sekarang.getMinutes()).padStart(2, '0');
-      return `${tahun}-${bulan}-${hari}T${jam}:${minit}`;
-    }
+    function onScanSuccess(decodedText) {
+      mainkanBunyiBeep();
 
-    function bukaSemakanStatusLokasi() {
-      document.getElementById('hasil-semak-lokasi').classList.add('hidden');
-      document.getElementById('hasil-semak-lokasi-kandungan').innerHTML = "";
-      document.getElementById('input-masa-semak').value = formatMasaInputSekarang();
+      const guru = JSON.parse(localStorage.getItem('atlas_guru') || '{}');
+      const statusHantar = statusSemasa;
+      const kelasHantar = kelasSemasa;
+      const subjekHantar = subjekSemasa;
+      const lokasiHantar = String(decodedText || '').trim();
 
-      const select = document.getElementById('select-lokasi-semak');
-      if (!select.options.length || select.options[0].value !== "") {
-        isiDropdownLokasiSemakan();
-      }
+      tutupScanner();
 
-      document.getElementById('status-modal').classList.remove('hidden');
-      document.getElementById('status-modal').classList.add('flex');
-    }
-
-    function tutupSemakanStatusLokasi() {
-      document.getElementById('status-modal').classList.add('hidden');
-      document.getElementById('status-modal').classList.remove('flex');
-    }
-
-    function ekstrakMinitDaripadaMasa(nilaiMasa) {
-      if (!nilaiMasa || typeof nilaiMasa !== 'string') return null;
-
-      const padanan = nilaiMasa.match(/(\d{1,2}):(\d{2})/);
-      if (!padanan) return null;
-
-      const jam = parseInt(padanan[1], 10);
-      const minit = parseInt(padanan[2], 10);
-      if (Number.isNaN(jam) || Number.isNaN(minit)) return null;
-
-      return jam * 60 + minit;
-    }
-
-    function cariStatusTempatanLokasi(lokasiDipilih, masaDipilih) {
-      const rekodSama = dataLiveGlobal.filter(item => {
-        const lokasiItem = item.lokasi || item.kelas || item.kodKelas || "";
-        return lokasiItem === lokasiDipilih;
-      });
-
-      if (rekodSama.length === 0) {
-        return {
-          status: "tiada",
-          mesej: "Tiada rekod dijumpai untuk lokasi ini pada data hari ini.",
-          rekod: []
-        };
-      }
-
-      const targetMinit = ekstrakMinitDaripadaMasa(masaDipilih);
-      if (targetMinit === null) {
-        return {
-          status: "ralat",
-          mesej: "Format masa tidak sah.",
-          rekod: []
-        };
-      }
-
-      const rekodTersusun = rekodSama
-        .map(item => ({
-          ...item,
-          minitMasa: ekstrakMinitDaripadaMasa(item.masa)
-        }))
-        .filter(item => item.minitMasa !== null)
-        .sort((a, b) => a.minitMasa - b.minitMasa);
-
-      if (rekodTersusun.length === 0) {
-        return {
-          status: "tiada",
-          mesej: "Rekod masa tidak lengkap untuk lokasi ini.",
-          rekod: rekodSama
-        };
-      }
-
-      const rekodSebelumAtauSama = rekodTersusun.filter(item => item.minitMasa <= targetMinit);
-      const rekodRujukan = rekodSebelumAtauSama.length > 0
-        ? rekodSebelumAtauSama[rekodSebelumAtauSama.length - 1]
-        : rekodTersusun[0];
-
-      return {
-        status: "success",
-        mesej: "Semakan tempatan berjaya dibuat menggunakan rekod hari ini.",
-        rekod: rekodTersusun,
-        rujukan: rekodRujukan
+      const payload = {
+        nama: guru.nama || '',
+        emel: guru.emel || '',
+        status: statusHantar,
+        kelas: kelasHantar,
+        subjek: subjekHantar,
+        lokasi: lokasiHantar
       };
-    }
 
-    function paparHasilSemakanLokasi(result, lokasiDipilih, masaDipilih, sumber = "server") {
-      const kotak = document.getElementById('hasil-semak-lokasi');
-      const kandungan = document.getElementById('hasil-semak-lokasi-kandungan');
+      paparToast('⌛ MEMPROSES...', 'Menyimpan rekod keberadaan...');
 
-      kotak.classList.remove('hidden');
-
-      if (!result || (Array.isArray(result) && result.length === 0)) {
-        kandungan.innerHTML = `
-          <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
-            <p class="text-slate-300">Tiada rekod ditemui untuk <span class="font-bold text-indigo-300">${lokasiDipilih}</span> pada masa <span class="font-bold text-indigo-300">${masaDipilih}</span>.</p>
-          </div>
-        `;
+      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes('PASTE_YOUR')) {
+        console.log('Demo payload:', payload);
+        paparToast('DEMO', 'Tetapan backend belum disambungkan.');
         return;
       }
 
-      if (result.status === "tiada" || result.status === "ralat") {
-        kandungan.innerHTML = `
-          <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
-            <p class="text-slate-300">${result.mesej || "Tiada maklumat ditemui."}</p>
-          </div>
-        `;
-        return;
-      }
-
-      const rujukan = result.rujukan || null;
-      const senaraiRekod = result.rekod || (Array.isArray(result) ? result : []);
-
-      let html = `
-        <div class="rounded-xl border border-slate-700 bg-slate-900 p-4 mb-4">
-          <p class="text-slate-200 mb-1"><span class="text-slate-400">Lokasi:</span> <span class="font-bold text-indigo-300">${lokasiDipilih}</span></p>
-          <p class="text-slate-200 mb-1"><span class="text-slate-400">Masa disemak:</span> <span class="font-bold text-indigo-300">${masaDipilih.replace('T', ' ')}</span></p>
-          <p class="text-slate-200"><span class="text-slate-400">Sumber:</span> <span class="font-bold text-indigo-300">${sumber === "server" ? "Pelayan" : "Data tempatan"}</span></p>
-        </div>
-      `;
-
-      if (rujukan) {
-        html += `
-          <div class="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 mb-4">
-            <p class="text-sm font-bold text-indigo-200 mb-2">Status pada masa rujukan</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-              <div><span class="text-slate-400">Masa:</span> <span class="text-white font-semibold">${rujukan.masa || '-'}</span></div>
-              <div><span class="text-slate-400">Status:</span> <span class="text-white font-semibold">${rujukan.status || '-'}</span></div>
-              <div><span class="text-slate-400">Guru:</span> <span class="text-white font-semibold">${rujukan.nama || '-'}</span></div>
-              <div><span class="text-slate-400">Subjek:</span> <span class="text-white font-semibold">${rujukan.subjek || '-'}</span></div>
-              <div class="sm:col-span-2"><span class="text-slate-400">Lokasi/Kelas:</span> <span class="text-white font-semibold">${rujukan.lokasi || rujukan.kelas || rujukan.kodKelas || '-'}</span></div>
-            </div>
-          </div>
-        `;
-      }
-
-      if (senaraiRekod.length > 0) {
-        html += `
-          <div class="rounded-xl border border-slate-700 bg-slate-950/40 overflow-hidden">
-            <div class="px-4 py-3 border-b border-slate-700">
-              <p class="text-sm font-bold text-slate-200">Rekod berkaitan</p>
-            </div>
-            <div class="max-h-60 overflow-y-auto">
-        `;
-
-        senaraiRekod.slice().reverse().forEach(item => {
-          const badgeStatus = item.status === 'MASUK'
-            ? '<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold text-[10px]">MASUK</span>'
-            : '<span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold text-[10px]">KELUAR</span>';
-
-          html += `
-            <div class="px-4 py-3 border-b border-slate-800 last:border-b-0 text-sm">
-              <div class="flex flex-wrap items-center gap-2 mb-2">
-                ${badgeStatus}
-                <span class="text-slate-400 text-xs">${item.masa || '-'}</span>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-300">
-                <div><span class="text-slate-500">Guru:</span> ${item.nama || '-'}</div>
-                <div><span class="text-slate-500">Subjek:</span> ${item.subjek || '-'}</div>
-                <div class="sm:col-span-2"><span class="text-slate-500">Lokasi/Kelas:</span> ${item.lokasi || item.kelas || item.kodKelas || '-'}</div>
-              </div>
-            </div>
-          `;
-        });
-
-        html += `
-            </div>
-          </div>
-        `;
-      }
-
-      kandungan.innerHTML = html;
-    }
-
-    function semakStatusLokasi() {
-      const lokasi = document.getElementById('select-lokasi-semak').value;
-      const masa = document.getElementById('input-masa-semak').value;
-
-      if (!lokasi || !masa) {
-        alert("Sila pilih lokasi dan masa terlebih dahulu.");
-        return;
-      }
-
-      paparToast("⌛ MENYEMAK...", "Mencari status lokasi berdasarkan masa...");
-
-      const url = new URL(GAS_WEB_APP_URL);
-      url.searchParams.set("action", "getStatusLokasiPadaMasa");
-      url.searchParams.set("lokasi", lokasi);
-      url.searchParams.set("masa", masa);
-
-      fetch(url.toString())
+      fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
         .then(res => res.json())
-        .then(data => {
-          if (Array.isArray(data)) {
-            paparHasilSemakanLokasi({ rekod: data }, lokasi, masa, "server");
-            return;
-          }
-
-          if (data && data.status === "success") {
-            if (Array.isArray(data.data) || data.rujukan) {
-              paparHasilSemakanLokasi(data, lokasi, masa, "server");
-            } else {
-              paparHasilSemakanLokasi({ rekod: [] }, lokasi, masa, "server");
-              document.getElementById('hasil-semak-lokasi-kandungan').innerHTML = `
-                <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
-                  <p class="text-slate-300">${data.message || "Semakan berjaya."}</p>
-                </div>
-              `;
-            }
+        .then(response => {
+          if (response.status === 'success') {
+            paparToast('BERJAYA!', response.message || 'Rekod telah disimpan.');
           } else {
-            const hasilTempatan = cariStatusTempatanLokasi(lokasi, masa);
-            paparHasilSemakanLokasi(hasilTempatan, lokasi, masa, "tempatan");
+            alert(response.message || 'Ralat simpanan.');
           }
         })
-        .catch(err => {
-          const hasilTempatan = cariStatusTempatanLokasi(lokasi, masa);
-          paparHasilSemakanLokasi(hasilTempatan, lokasi, masa, "tempatan");
+        .catch(() => {
+          alert('Ralat sambungan. Sila cuba lagi.');
+        })
+        .finally(() => {
+          statusSemasa = '';
+          kelasSemasa = '';
+          subjekSemasa = '';
+          lokasiSemasa = '';
         });
     }
 
-    // 🔊 Fungsi Penjana Bunyi Beep (Web Audio API)
+    // ==============================
+    // SEMAK STATUS KELAS
+    // ==============================
+    function semakStatusKelas() {
+      const kelas = document.getElementById('select-kelas-semak').value.trim();
+      if (!kelas) {
+        alert('Sila pilih kelas dahulu.');
+        return;
+      }
+
+      paparToast('⌛ MENYEMAK...', 'Mencari status kelas terkini...');
+
+      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes('PASTE_YOUR')) {
+        paparHasilSemakanKelas({
+          status: 'success',
+          kelas,
+          statusKelas: 'DEMO',
+          lokasiSemasa: 'MAKMAL KOMPUTER',
+          guruSemasa: 'Cikgu Ali',
+          subjekSemasa: 'Matematik',
+          masaSemasa: '08:15',
+          rekod: [
+            { masa: '08:15', nama: 'Cikgu Ali', lokasi: 'MAKMAL KOMPUTER', subjek: 'Matematik', status: 'MASUK' }
+          ]
+        });
+        return;
+      }
+
+      fetch(`${GAS_WEB_APP_URL}?action=getStatusKelas&kelas=${encodeURIComponent(kelas)}`)
+        .then(res => res.json())
+        .then(data => paparHasilSemakanKelas(data))
+        .catch(() => {
+          const box = document.getElementById('hasil-status-kelas');
+          const kandungan = document.getElementById('hasil-status-kelas-kandungan');
+          box.classList.remove('hidden');
+          kandungan.innerHTML = '<p class="text-rose-300 text-sm">Ralat sambungan. Sila cuba lagi.</p>';
+        });
+    }
+
+    function paparHasilSemakanKelas(data) {
+      const box = document.getElementById('hasil-status-kelas');
+      const kandungan = document.getElementById('hasil-status-kelas-kandungan');
+
+      if (!box || !kandungan) return;
+
+      box.classList.remove('hidden');
+
+      if (!data || data.status !== 'success') {
+        kandungan.innerHTML = `
+          <div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
+            <p class="text-rose-300 text-sm font-semibold">${(data && data.message) ? data.message : 'Semakan gagal.'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (!data.rekod || data.rekod.length === 0) {
+        kandungan.innerHTML = `
+          <div class="rounded-2xl border border-slate-700 bg-slate-950 p-4">
+            <p class="text-slate-300 text-sm">${data.message || 'Tiada rekod dijumpai untuk kelas ini.'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      kandungan.innerHTML = `
+        <div class="rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4">
+          <p class="text-indigo-300 font-bold mb-3">📚 STATUS KELAS ${data.kelas}</p>
+          <div class="space-y-2 text-sm">
+            <p><span class="text-slate-400">Status:</span> <span class="text-white font-bold">${data.statusKelas || '-'}</span></p>
+            <p><span class="text-slate-400">📍 Lokasi:</span> <span class="text-white font-semibold">${data.lokasiSemasa || '-'}</span></p>
+            <p><span class="text-slate-400">👨‍🏫 Guru:</span> <span class="text-white font-semibold">${data.guruSemasa || '-'}</span></p>
+            <p><span class="text-slate-400">📖 Subjek:</span> <span class="text-white font-semibold">${data.subjekSemasa || '-'}</span></p>
+            <p><span class="text-slate-400">⏰ Masa:</span> <span class="text-white font-semibold">${data.masaSemasa || '-'}</span></p>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==============================
+    // TOAST
+    // ==============================
+    function paparToast(tajuk, deskripsi) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').innerText = tajuk;
+      document.getElementById('toast-desc').innerText = deskripsi;
+      toast.classList.remove('translate-y-28', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-28', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    // ==============================
+    // BEEP
+    // ==============================
     function mainkanBunyiBeep() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
 
-        oscillator.type = 'sine'; // Jenis gelombang bunyi
-        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); // Frekuensi bunyi (800Hz - rangup!)
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Kelantangan (Volume 10%)
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
 
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
 
         oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.12); // Durasi bunyi (0.12 saat)
+        oscillator.stop(audioCtx.currentTime + 0.12);
       } catch (e) {
-        console.log("Audio tidak disokong atau disekat", e);
+        console.log('Audio tidak disokong atau disekat', e);
       }
     }
-
-    function bukaSemakanKelas() {
-  document.getElementById('hasil-semak-kelas').classList.add('hidden');
-  document.getElementById('hasil-semak-kelas').innerHTML = "";
-  document.getElementById('input-nama-kelas').value = "";
-  document.getElementById('kelas-modal').classList.remove('hidden');
-  document.getElementById('kelas-modal').classList.add('flex');
-}
-
-function tutupSemakanKelas() {
-  document.getElementById('kelas-modal').classList.add('hidden');
-  document.getElementById('kelas-modal').classList.remove('flex');
-}
-
-function semakStatusKelas() {
-  const kelas =
-    document.getElementById('select-kelas-semak').value.trim();
-  if (!kelas) {
-    alert("Sila pilih kelas dahulu.");
-    return;
-  }
-  paparToast(
-    "⌛ MENYEMAK...",
-    "Mencari lokasi kelas terkini..."
-  );
-  fetch(
-    `${GAS_WEB_APP_URL}?action=getStatusKelas&kelas=${encodeURIComponent(kelas)}`
-  )
-  .then(res => res.json())
-  .then(data => {
-    paparHasilSemakanKelas(data);
-  })
-  .catch(err => {
-    console.log(err);
-    document
-      .getElementById('hasil-semak-kelas')
-      .classList
-      .remove('hidden');
-    document
-    .getElementById('hasil-semak-kelas')
-    .innerHTML = `
-      <p class="text-rose-300 text-sm">
-        Ralat sambungan. Sila cuba lagi.
-      </p>
-    `;
-  });
-}
-    
-function paparHasilSemakanKelas(data) {
-
-  const box = document.getElementById('hasil-status-kelas');
-  const kandungan = document.getElementById('hasil-status-kelas-kandungan');
-
-  if (!box || !kandungan) {
-    console.error("Elemen hasil-status-kelas tidak dijumpai.");
-    return;
-  }
-
-  box.classList.remove('hidden');
-
-
-  if (!data || data.status !== "success") {
-
-    kandungan.innerHTML = `
-      <div class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4">
-        <p class="text-rose-300 text-sm font-semibold">
-          ${(data && data.message) ? data.message : "Semakan gagal."}
-        </p>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  if (!data.rekod || data.rekod.length === 0) {
-
-    kandungan.innerHTML = `
-      <div class="rounded-xl border border-slate-700 bg-slate-950 p-4">
-        <p class="text-slate-300 text-sm">
-          ${data.message || "Tiada rekod dijumpai."}
-        </p>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  kandungan.innerHTML = `
-
-    <div class="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4">
-
-      <p class="text-indigo-300 font-bold mb-3">
-        📚 STATUS KELAS ${data.kelas}
-      </p>
-
-
-      <div class="space-y-2 text-sm">
-
-        <p>
-          <span class="text-slate-400">Status:</span>
-          <span class="text-white font-bold">
-            ${data.statusKelas || '-'}
-          </span>
-        </p>
-
-
-        <p>
-          <span class="text-slate-400">📍 Lokasi:</span>
-          <span class="text-white font-semibold">
-            ${data.lokasiSemasa || '-'}
-          </span>
-        </p>
-
-
-        <p>
-          <span class="text-slate-400">👨‍🏫 Guru:</span>
-          <span class="text-white font-semibold">
-            ${data.guruSemasa || '-'}
-          </span>
-        </p>
-
-
-        <p>
-          <span class="text-slate-400">📖 Subjek:</span>
-          <span class="text-white font-semibold">
-            ${data.subjekSemasa || '-'}
-          </span>
-        </p>
-
-
-        <p>
-          <span class="text-slate-400">⏰ Masa:</span>
-          <span class="text-white font-semibold">
-            ${data.masaSemasa || '-'}
-          </span>
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <div class="mt-4">
-
-      <p class="text-slate-300 text-sm font-bold mb-2">
-        Rekod Imbasan Kelas
-      </p>
-
-
-      <div class="space-y-2 max-h-60 overflow-y-auto">
-
-      ${
-        data.rekod.map(r => `
-
-          <div class="bg-slate-800 rounded-xl p-3 text-sm">
-
-            <div>
-              ⏰ ${r.masa}
-            </div>
-
-            <div>
-              👨‍🏫 ${r.nama}
-            </div>
-
-            <div>
-              📍 ${r.lokasi}
-            </div>
-
-            <div>
-              📖 ${r.subjek}
-            </div>
-
-            <div>
-              Status:
-              <span class="${
-                r.status === "MASUK"
-                ? "text-emerald-300"
-                : "text-rose-300"
-              } font-bold">
-                ${r.status}
-              </span>
-            </div>
-          </div>
-        `).join('')
-      }
-      </div>
-    </div>
-  `;
-}
-
-    function isiButangKelas(){
-
-  const kontainer = document.getElementById('butang-kelas');
-
-  kontainer.innerHTML="";
-
-  SENARAI_KELAS.forEach(kelas=>{
-
-      const button=document.createElement('button');
-
-      button.type="button";
-      button.className =
-      "bg-slate-900 hover:bg-slate-700 border border-slate-600 text-white font-semibold py-3 rounded-xl text-sm";
-      button.innerText=kelas;
-
-      button.onclick=function(){
-          kelasSemasa=kelas;
-          tutupModalKelas();
-          if(statusSemasa==="MASUK"){
-              bukaModalSubjek();
-          }
-          else{
-              aktifkanScanner();
-          }
-      };
-      kontainer.appendChild(button);
-  });
-}
-
-function isiDropdownLokasiSemakan() {
-  const select = document.getElementById('select-lokasi-semak');
-  if(!select) {
-    console.error("ID select-lokasi-semak tidak dijumpai di dalam HTML!");
-    return;
-  }
-
-  // 1. Kosongkan dropdown terlebih dahulu
-  select.innerHTML = '<option value="">-- Sila Pilih --</option>';
-
-  // 2. Gabungkan senarai global
-  const senaraiPilihan = [...SENARAI_KELAS, ...SENARAI_LOKASI];
-
-  // 3. Masukkan ke dalam dropdown satu per satu
-  senaraiPilihan.forEach(function(item) {
-    const opt = document.createElement('option');
-    opt.value = item;
-    opt.textContent = item;
-    select.appendChild(opt);
-  });
-}
   </script>
-
-  <!-- ====================================================== -->
-<!-- MODAL: SEMAK STATUS LOKASI (BERDASARKAN MASA) -->
-<!-- ====================================================== -->
-<div id="status-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-opacity">
-  <div class="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
-    
-    <!-- Pengepala Modal -->
-    <div class="flex justify-between items-center border-b border-gray-700 pb-3">
-      <h3 class="text-white font-bold text-lg flex items-center gap-2">
-        <span>🔎</span> Semak Status Lokasi
-      </h3>
-      <!-- Butang Tutup -->
-      <button onclick="tutupSemakanStatusLokasi()" class="text-gray-400 hover:text-red-400 transition-colors">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Pilihan Lokasi -->
-    <div>
-      <label class="block text-gray-400 text-sm font-semibold mb-2">Pilih Lokasi / Kelas</label>
-      <select id="select-lokasi-semak" class="w-full bg-gray-800 text-white border border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
-        <option value="">-- Sila Pilih --</option>
-        <!-- Pilihan akan dimasukkan melalui fungsi isiDropdownLokasiSemakan() -->
-      </select>
-    </div>
-
-    <!-- Input Masa -->
-    <div>
-      <label class="block text-gray-400 text-sm font-semibold mb-2">Pilih Tarikh & Masa</label>
-      <input type="datetime-local" id="input-masa-semak" class="w-full bg-gray-800 text-white border border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
-    </div>
-
-    <!-- Butang Semak -->
-    <!-- (Pastikan anda mempunyai fungsi semakLokasiPadaMasa() atau nama yang sepadan di JS anda) -->
-    <button onclick="semakStatusLokasi()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-lg">
-      SEMAK SEKARANG
-    </button>
-
-    <!-- Kawasan Paparan Hasil Carian -->
-    <div id="hasil-semak-lokasi" class="hidden mt-2 p-4 bg-gray-800 rounded-xl border border-gray-700 shadow-inner">
-      <div id="hasil-semak-lokasi-kandungan" class="text-sm text-gray-200 space-y-2">
-        <!-- Hasil jawapan pelayan akan dipaparkan di sini -->
-      </div>
-    </div>
-
-  </div>
-</div>
 </body>
 </html>
