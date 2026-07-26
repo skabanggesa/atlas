@@ -9,14 +9,20 @@
 </head>
 <body class="min-h-screen bg-slate-950 text-white font-sans antialiased">
   <div class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-5xl grid lg:grid-cols-[380px_1fr] gap-6">
+    <div class="w-full max-w-6xl grid lg:grid-cols-[380px_1fr] gap-6">
       <!-- Sidebar / Branding -->
       <aside class="bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl p-6 lg:p-8 flex flex-col justify-between">
         <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold tracking-wider">
-            <span>⚡</span>
-            <span>ATLAS SCANNER</span>
+          <div class="flex items-center gap-3">
+            <img src="atlas.png" alt="ATLAS Logo" class="w-16 h-16 rounded-2xl object-cover border border-slate-700 bg-slate-950" />
+            <div>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold tracking-wider">
+                <span>⚡</span>
+                <span>ATLAS SCANNER</span>
+              </div>
+            </div>
           </div>
+
           <h1 class="mt-5 text-3xl lg:text-4xl font-black leading-tight">
             Attendance Tracking for Learning and Academic Sessions
           </h1>
@@ -49,9 +55,9 @@
           </div>
         </div>
 
-        <div class="mt-8 pt-5 border-t border-slate-800 text-xs text-slate-500">
+        <div class="mt-8 pt-5 border-t border-slate-800 text-xs text-slate-500 space-y-1">
           <p>Versi asas untuk bina semula aplikasi.</p>
-          <p class="mt-1">Gunakan Google Apps Script sebagai backend apabila siap.</p>
+          <p>Gunakan Google Apps Script sebagai backend apabila siap.</p>
         </div>
       </aside>
 
@@ -59,9 +65,12 @@
       <main class="bg-slate-900/70 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
         <!-- Top Bar -->
         <div class="px-5 lg:px-7 py-5 border-b border-slate-800 flex items-center justify-between gap-3">
-          <div>
-            <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Dashboard</p>
-            <h2 class="text-xl font-bold text-emerald-300">Selamat datang ke ATLAS</h2>
+          <div class="flex items-center gap-3">
+            <img src="atlas.png" alt="ATLAS" class="w-12 h-12 rounded-2xl object-cover border border-slate-700 bg-slate-950 lg:hidden" />
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Dashboard</p>
+              <h2 class="text-xl font-bold text-emerald-300">Selamat datang ke ATLAS</h2>
+            </div>
           </div>
           <span id="badge-mode" class="hidden text-[11px] px-3 py-1 rounded-full border font-bold tracking-wider"></span>
         </div>
@@ -70,9 +79,12 @@
         <div class="p-5 lg:p-7 space-y-5">
           <!-- Login card -->
           <section id="login-screen" class="bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
-            <div class="mb-5">
-              <h3 class="text-lg font-bold text-blue-300">Log Masuk Guru</h3>
-              <p class="text-sm text-slate-400 mt-1">Pilih nama guru dan masukkan PIN untuk mula.</p>
+            <div class="mb-5 flex items-center gap-3">
+              <img src="atlas.png" alt="ATLAS" class="w-14 h-14 rounded-2xl object-cover border border-slate-700 bg-slate-950" />
+              <div>
+                <h3 class="text-lg font-bold text-blue-300">Log Masuk Guru</h3>
+                <p class="text-sm text-slate-400 mt-1">Pilih nama guru dan masukkan PIN untuk mula.</p>
+              </div>
             </div>
 
             <div class="space-y-4">
@@ -126,17 +138,38 @@
               </button>
             </div>
 
-            <button onclick="bukaSemakanKelas()" class="w-full rounded-3xl bg-indigo-600 hover:bg-indigo-500 transition p-5 text-left shadow-lg shadow-indigo-600/20">
-              <div class="text-2xl">🔎</div>
-              <div class="mt-2">
-                <p class="text-lg font-black">SEMAK STATUS KELAS</p>
-                <p class="text-sm text-indigo-50/80">Cari di mana kelas berada, dengan guru siapa, dan subjek apa.</p>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <button onclick="bukaSemakanKelas()" class="rounded-3xl bg-indigo-600 hover:bg-indigo-500 transition p-5 text-left shadow-lg shadow-indigo-600/20">
+                <div class="text-2xl">🔎</div>
+                <div class="mt-2">
+                  <p class="text-lg font-black">SEMAK STATUS KELAS</p>
+                  <p class="text-sm text-indigo-50/80">Cari di mana kelas berada, dengan guru siapa, dan subjek apa.</p>
+                </div>
+              </button>
+
+              <button onclick="bukaSemakanLokasiMasa()" class="rounded-3xl bg-amber-500 hover:bg-amber-400 transition p-5 text-left shadow-lg shadow-amber-500/20 text-slate-950">
+                <div class="text-2xl">⏱️</div>
+                <div class="mt-2">
+                  <p class="text-lg font-black">SEMAK MASA - LOKASI</p>
+                  <p class="text-sm opacity-80">Semak rekod pada tarikh dan masa tertentu.</p>
+                </div>
+              </button>
+            </div>
+
+            <button id="btn-admin-panel" onclick="bukaLiveData()" class="hidden w-full rounded-3xl bg-slate-800 hover:bg-slate-700 border border-amber-500/20 transition p-5 text-left shadow-lg">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <div class="text-2xl">📡</div>
+                  <p class="mt-2 text-lg font-black text-amber-300">PANEL ADMIN / LIVE RADAR</p>
+                  <p class="text-sm text-slate-400">Lihat rekod hari ini mengikut guru dan lokasi.</p>
+                </div>
+                <span class="text-amber-300 text-2xl">›</span>
               </div>
             </button>
 
             <!-- Scanner card -->
             <section id="scanner-card" class="hidden bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
-              <div class="flex items-center justify-between gap-3 mb-4">
+              <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
                 <div>
                   <span id="label-status-scan" class="inline-flex text-xs font-bold px-3 py-1 rounded-full border"></span>
                   <span id="label-kelas-scan" class="hidden inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border"></span>
@@ -206,6 +239,93 @@
     </div>
   </div>
 
+  <!-- Modal: Semak Masa / Lokasi -->
+  <div id="lokasi-masa-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl p-5 lg:p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 class="text-xl font-bold text-amber-300">Semak Masa - Lokasi</h3>
+          <p class="text-sm text-slate-400 mt-1">Semak rekod guru / kelas pada masa tertentu.</p>
+        </div>
+        <button onclick="tutupSemakanLokasiMasa()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Lokasi / Kelas</label>
+          <select id="select-lokasi-masa" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500">
+            <option value="">-- Pilih Lokasi / Kelas --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Tarikh & Masa</label>
+          <input id="input-masa-semak" type="datetime-local" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500" />
+        </div>
+      </div>
+
+      <button onclick="semakStatusLokasiPadaMasa()" class="w-full mt-4 rounded-2xl bg-amber-500 hover:bg-amber-400 transition px-4 py-3 font-black text-slate-950 shadow-lg shadow-amber-500/20">
+        🔍 Semak Rekod
+      </button>
+
+      <div id="hasil-status-lokasi" class="hidden mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+        <div id="hasil-status-lokasi-kandungan"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Live Radar Admin -->
+  <div id="admin-screen" class="hidden fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-sm overflow-y-auto">
+    <div class="max-w-6xl mx-auto p-4 lg:p-6 min-h-screen flex flex-col">
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-5 lg:p-6 mb-4">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Panel Admin</p>
+            <h3 class="text-2xl font-black text-amber-300">Radar Keberadaan (Hari Ini)</h3>
+            <p id="label-masa-kemaskini" class="text-sm text-slate-400 mt-1">Memuat naik data...</p>
+          </div>
+          <button onclick="tutupLiveData()" class="rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200">Kembali</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Saring Guru</label>
+            <select id="filter-guru" onchange="saringDanPaparData()" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500">
+              <option value="">Semua Guru</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Saring Kelas / Lokasi</label>
+            <select id="filter-kelas" onchange="saringDanPaparData()" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500">
+              <option value="">Semua Kelas / Lokasi</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex-1 min-h-[420px]">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-slate-950/80 text-slate-400 border-b border-slate-800 sticky top-0">
+                <th class="p-3">Masa</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Guru</th>
+                <th class="p-3">Kelas</th>
+                <th class="p-3">Subjek</th>
+                <th class="p-3">Lokasi</th>
+              </tr>
+            </thead>
+            <tbody id="jadual-live-body" class="divide-y divide-slate-800/60">
+              <tr>
+                <td colspan="6" class="p-6 text-center text-slate-500">Memuat naik rekod hari ini...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-28 opacity-0 transition-all duration-300 z-50 bg-emerald-500 text-slate-950 font-bold px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
     <span class="text-2xl">✅</span>
@@ -251,6 +371,19 @@
       "PJK"
     ];
 
+    const SENARAI_LOKASI = [
+      "DEWAN KESATRIA",
+      "DEWAN SRI GESA",
+      "PADANG",
+      "MAKMAL SAINS",
+      "MAKMAL KOMPUTER",
+      "PUSAT SUMBER",
+      "BILIK JQAF",
+      "BILIK KAUNSELING",
+      "BILIK PEMULIHAN",
+      "SURAU"
+    ];
+
     // ==============================
     // STATE
     // ==============================
@@ -261,6 +394,7 @@
     let lokasiSemasa = "";
     let html5QrcodeScanner = null;
     let modeScanner = ""; // MASUK / KELUAR
+    let dataLiveGlobal = [];
 
     // ==============================
     // INIT
@@ -269,22 +403,35 @@
       isiButangKelas();
       isiButangSubjek();
       isiDropdownKelasSemakan();
+      isiDropdownLokasiMasa();
       muatSenaraiGuru();
+      setupPaparanLoginAwal();
     };
 
-function muatSenaraiGuru() {
-  fetch(`${GAS_WEB_APP_URL}?action=getSenaraiGuru`)
-    .then(res => res.json())
-    .then(data => {
-      if (Array.isArray(data) && data.length) {
-        senaraiGuruGlobal = data;
-        isiDropdownGuru(data);
-      } else {
-        isiDropdownGuruDemo();
+    function setupPaparanLoginAwal() {
+      const savedGuru = localStorage.getItem('atlas_guru');
+      if (savedGuru) {
+        try {
+          setupPaparanGuru(JSON.parse(savedGuru));
+        } catch (e) {
+          localStorage.removeItem('atlas_guru');
+        }
       }
-    })
-    .catch(() => isiDropdownGuruDemo());
-}
+    }
+
+    function muatSenaraiGuru() {
+      fetch(`${GAS_WEB_APP_URL}?action=getSenaraiGuru`)
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length) {
+            senaraiGuruGlobal = data;
+            isiDropdownGuru(data);
+          } else {
+            isiDropdownGuruDemo();
+          }
+        })
+        .catch(() => isiDropdownGuruDemo());
+    }
 
     function isiDropdownGuruDemo() {
       senaraiGuruGlobal = [
@@ -337,6 +484,7 @@ function muatSenaraiGuru() {
       if (String(guru.peranan || '').toUpperCase() === 'ADMIN') {
         document.getElementById('badge-peranan').classList.remove('hidden');
         document.getElementById('badge-peranan').innerText = 'ADMIN';
+        document.getElementById('btn-admin-panel').classList.remove('hidden');
       } else {
         document.getElementById('badge-peranan').classList.add('hidden');
       }
@@ -350,7 +498,7 @@ function muatSenaraiGuru() {
     }
 
     // ==============================
-    // BUTTONS: CLASS / SUBJECT
+    // BUTTONS: CLASS / SUBJECT / LOCATION
     // ==============================
     function isiButangKelas() {
       const kontainer = document.getElementById('butang-kelas');
@@ -391,6 +539,18 @@ function muatSenaraiGuru() {
       });
     }
 
+    function isiDropdownLokasiMasa() {
+      const select = document.getElementById('select-lokasi-masa');
+      if (!select) return;
+      select.innerHTML = '<option value="">-- Pilih Lokasi / Kelas --</option>';
+      SENARAI_KELAS.forEach(kelas => {
+        select.innerHTML += `<option value="${kelas}">${kelas}</option>`;
+      });
+      SENARAI_LOKASI.forEach(lokasi => {
+        select.innerHTML += `<option value="${lokasi}">${lokasi}</option>`;
+      });
+    }
+
     // ==============================
     // MODALS
     // ==============================
@@ -425,6 +585,20 @@ function muatSenaraiGuru() {
     function tutupSemakanStatusKelas() {
       document.getElementById('status-kelas-modal').classList.add('hidden');
       document.getElementById('status-kelas-modal').classList.remove('flex');
+    }
+
+    function bukaSemakanLokasiMasa() {
+      document.getElementById('hasil-status-lokasi').classList.add('hidden');
+      document.getElementById('hasil-status-lokasi-kandungan').innerHTML = '';
+      document.getElementById('select-lokasi-masa').value = '';
+      document.getElementById('input-masa-semak').value = formatDateTimeLocalNow();
+      document.getElementById('lokasi-masa-modal').classList.remove('hidden');
+      document.getElementById('lokasi-masa-modal').classList.add('flex');
+    }
+
+    function tutupSemakanLokasiMasa() {
+      document.getElementById('lokasi-masa-modal').classList.add('hidden');
+      document.getElementById('lokasi-masa-modal').classList.remove('flex');
     }
 
     // ==============================
@@ -483,7 +657,6 @@ function muatSenaraiGuru() {
       labelSubjek.className = 'inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300';
       labelSubjek.innerText = subjekSemasa || '-';
 
-      // Reset scanner if exists
       if (html5QrcodeScanner) {
         try {
           html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(() => {});
@@ -539,12 +712,6 @@ function muatSenaraiGuru() {
 
       paparToast('⌛ MEMPROSES...', 'Menyimpan rekod keberadaan...');
 
-      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes('PASTE_YOUR')) {
-        console.log('Demo payload:', payload);
-        paparToast('DEMO', 'Tetapan backend belum disambungkan.');
-        return;
-      }
-
       fetch(GAS_WEB_APP_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -570,6 +737,82 @@ function muatSenaraiGuru() {
     }
 
     // ==============================
+    // LIVE DATA / ADMIN
+    // ==============================
+    function bukaLiveData() {
+      document.getElementById('admin-screen').classList.remove('hidden');
+      fetch(`${GAS_WEB_APP_URL}?action=getLiveDataHariIni`)
+        .then(res => res.json())
+        .then(data => {
+          dataLiveGlobal = Array.isArray(data) ? data : [];
+          document.getElementById('label-masa-kemaskini').innerText = `Dikemas kini pada: ${new Date().toLocaleTimeString('ms-MY')}`;
+
+          const senaraiGuruUnique = [...new Set(dataLiveGlobal.map(item => item.nama).filter(Boolean))].sort();
+          const senaraiKelasUnique = [...new Set(dataLiveGlobal.map(item => item.kelas).filter(Boolean))].sort();
+
+          const selectGuru = document.getElementById('filter-guru');
+          const selectKelas = document.getElementById('filter-kelas');
+
+          selectGuru.innerHTML = '<option value="">Semua Guru</option>';
+          senaraiGuruUnique.forEach(g => selectGuru.innerHTML += `<option value="${g}">${g}</option>`);
+
+          selectKelas.innerHTML = '<option value="">Semua Kelas / Lokasi</option>';
+          senaraiKelasUnique.forEach(k => selectKelas.innerHTML += `<option value="${k}">${k}</option>`);
+
+          saringDanPaparData();
+        })
+        .catch(() => {
+          dataLiveGlobal = [];
+          document.getElementById('label-masa-kemaskini').innerText = `Ralat memuat naik data`;
+          saringDanPaparData();
+        });
+    }
+
+    function tutupLiveData() {
+      document.getElementById('admin-screen').classList.add('hidden');
+    }
+
+    function saringDanPaparData() {
+      const penapisGuru = document.getElementById('filter-guru').value;
+      const penapisKelas = document.getElementById('filter-kelas').value;
+
+      let dataSaringan = dataLiveGlobal.filter(item => {
+        return (penapisGuru === '' || item.nama === penapisGuru) && (penapisKelas === '' || item.kelas === penapisKelas);
+      });
+
+      dataSaringan.sort((a, b) => {
+        if ((a.kelas || '').toLowerCase() < (b.kelas || '').toLowerCase()) return -1;
+        if ((a.kelas || '').toLowerCase() > (b.kelas || '').toLowerCase()) return 1;
+        return (a.masa || '').localeCompare(b.masa || '');
+      });
+
+      const tbody = document.getElementById('jadual-live-body');
+      tbody.innerHTML = '';
+
+      if (dataSaringan.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-500">Tiada rekod keberadaan dijumpai.</td></tr>';
+        return;
+      }
+
+      dataSaringan.forEach(row => {
+        const badgeStatus = row.status === 'MASUK'
+          ? '<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">MASUK</span>'
+          : '<span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold">KELUAR</span>';
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-800/40 transition duration-150">
+            <td class="p-3 font-mono text-slate-300">${row.masa || '-'}</td>
+            <td class="p-3">${badgeStatus}</td>
+            <td class="p-3 font-medium text-white">${row.nama || '-'}</td>
+            <td class="p-3 text-amber-300 font-semibold">${row.kelas || '-'}</td>
+            <td class="p-3 text-slate-200">${row.subjek || '-'}</td>
+            <td class="p-3 text-slate-200">${row.lokasi || '-'}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // ==============================
     // SEMAK STATUS KELAS
     // ==============================
     function semakStatusKelas() {
@@ -580,22 +823,6 @@ function muatSenaraiGuru() {
       }
 
       paparToast('⌛ MENYEMAK...', 'Mencari status kelas terkini...');
-
-      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes('PASTE_YOUR')) {
-        paparHasilSemakanKelas({
-          status: 'success',
-          kelas,
-          statusKelas: 'DEMO',
-          lokasiSemasa: 'MAKMAL KOMPUTER',
-          guruSemasa: 'Cikgu Ali',
-          subjekSemasa: 'Matematik',
-          masaSemasa: '08:15',
-          rekod: [
-            { masa: '08:15', nama: 'Cikgu Ali', lokasi: 'MAKMAL KOMPUTER', subjek: 'Matematik', status: 'MASUK' }
-          ]
-        });
-        return;
-      }
 
       fetch(`${GAS_WEB_APP_URL}?action=getStatusKelas&kelas=${encodeURIComponent(kelas)}`)
         .then(res => res.json())
@@ -613,7 +840,6 @@ function muatSenaraiGuru() {
       const kandungan = document.getElementById('hasil-status-kelas-kandungan');
 
       if (!box || !kandungan) return;
-
       box.classList.remove('hidden');
 
       if (!data || data.status !== 'success') {
@@ -644,8 +870,100 @@ function muatSenaraiGuru() {
             <p><span class="text-slate-400">📖 Subjek:</span> <span class="text-white font-semibold">${data.subjekSemasa || '-'}</span></p>
             <p><span class="text-slate-400">⏰ Masa:</span> <span class="text-white font-semibold">${data.masaSemasa || '-'}</span></p>
           </div>
+
+          <div class="mt-4 border-t border-slate-700/70 pt-4">
+            <p class="text-slate-300 text-sm font-bold mb-2">Rekod Imbasan Kelas</p>
+            <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+              ${data.rekod.map(r => `
+                <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3 text-sm">
+                  <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <span class="text-slate-400">⏰ ${r.masa || '-'}</span>
+                    <span class="${r.status === 'MASUK' ? 'text-emerald-300' : 'text-rose-300'} font-bold">${r.status || '-'}</span>
+                  </div>
+                  <div class="space-y-1 text-slate-200">
+                    <div>👨‍🏫 ${r.nama || '-'}</div>
+                    <div>📍 ${r.lokasi || '-'}</div>
+                    <div>📖 ${r.subjek || '-'}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
         </div>
       `;
+    }
+
+    // ==============================
+    // SEMAK MASA - LOKASI
+    // ==============================
+    function semakStatusLokasiPadaMasa() {
+      const lokasi = document.getElementById('select-lokasi-masa').value.trim();
+      const masa = document.getElementById('input-masa-semak').value.trim();
+
+      if (!lokasi || !masa) {
+        alert('Sila pilih lokasi/kelas dan masa terlebih dahulu.');
+        return;
+      }
+
+      paparToast('⌛ MENYEMAK...', 'Mencari rekod pada masa tersebut...');
+
+      fetch(`${GAS_WEB_APP_URL}?action=getStatusLokasiPadaMasa&lokasi=${encodeURIComponent(lokasi)}&masa=${encodeURIComponent(masa)}`)
+        .then(res => res.json())
+        .then(data => paparHasilSemakanLokasi(data, lokasi, masa))
+        .catch(() => {
+          const box = document.getElementById('hasil-status-lokasi');
+          const kandungan = document.getElementById('hasil-status-lokasi-kandungan');
+          box.classList.remove('hidden');
+          kandungan.innerHTML = '<p class="text-rose-300 text-sm">Ralat sambungan. Sila cuba lagi.</p>';
+        });
+    }
+
+    function paparHasilSemakanLokasi(data, lokasi, masa) {
+      const box = document.getElementById('hasil-status-lokasi');
+      const kandungan = document.getElementById('hasil-status-lokasi-kandungan');
+      if (!box || !kandungan) return;
+      box.classList.remove('hidden');
+
+      if (!data || data.status !== 'success') {
+        kandungan.innerHTML = `
+          <div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
+            <p class="text-rose-300 text-sm font-semibold">${(data && data.message) ? data.message : 'Semakan gagal.'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (!data.rekod || data.rekod.length === 0) {
+        kandungan.innerHTML = `
+          <div class="rounded-2xl border border-slate-700 bg-slate-950 p-4">
+            <p class="text-slate-300 text-sm">Tiada rekod dijumpai untuk <span class="font-semibold text-amber-300">${lokasi}</span> pada masa <span class="font-semibold text-amber-300">${masa}</span>.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const r = data.rujukan || data.rekod[data.rekod.length - 1];
+
+      kandungan.innerHTML = `
+        <div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
+          <p class="text-amber-300 font-bold mb-3">⏱️ SEMAKAN MASA - LOKASI</p>
+          <div class="space-y-2 text-sm">
+            <p><span class="text-slate-400">Lokasi:</span> <span class="text-white font-semibold">${lokasi}</span></p>
+            <p><span class="text-slate-400">Masa disemak:</span> <span class="text-white font-semibold">${masa.replace('T', ' ')}</span></p>
+            <p><span class="text-slate-400">Status:</span> <span class="text-white font-semibold">${r.status || '-'}</span></p>
+            <p><span class="text-slate-400">Guru:</span> <span class="text-white font-semibold">${r.nama || '-'}</span></p>
+            <p><span class="text-slate-400">Kelas:</span> <span class="text-white font-semibold">${r.kelas || '-'}</span></p>
+            <p><span class="text-slate-400">Subjek:</span> <span class="text-white font-semibold">${r.subjek || '-'}</span></p>
+            <p><span class="text-slate-400">Masa rekod:</span> <span class="text-white font-semibold">${r.masa || '-'}</span></p>
+          </div>
+        </div>
+      `;
+    }
+
+    function formatDateTimeLocalNow() {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
     }
 
     // ==============================
