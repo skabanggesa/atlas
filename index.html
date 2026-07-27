@@ -639,42 +639,55 @@
       aktifkanScanner();
     }
 
-    function aktifkanScanner() {
-      document.getElementById('scanner-card').classList.remove('hidden');
-      document.getElementById('label-status-scan').classList.remove('hidden');
-      document.getElementById('label-status-scan').className = modeScanner === 'MASUK'
-        ? 'inline-flex text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-        : 'inline-flex text-xs font-bold px-3 py-1 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-300';
-      document.getElementById('label-status-scan').innerText = modeScanner === 'MASUK' ? 'IMBAS MASUK' : 'IMBAS KELUAR';
+function aktifkanScanner() {
+  document.getElementById('scanner-card').classList.remove('hidden');
+  document.getElementById('label-status-scan').classList.remove('hidden');
+  document.getElementById('label-status-scan').className = modeScanner === 'MASUK'
+    ? 'inline-flex text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+    : 'inline-flex text-xs font-bold px-3 py-1 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-300';
+  document.getElementById('label-status-scan').innerText = modeScanner === 'MASUK' ? 'IMBAS MASUK' : 'IMBAS KELUAR';
 
-      const labelKelas = document.getElementById('label-kelas-scan');
-      labelKelas.classList.remove('hidden');
-      labelKelas.className = 'inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300';
-      labelKelas.innerText = kelasSemasa || '-';
+  const labelKelas = document.getElementById('label-kelas-scan');
+  labelKelas.classList.remove('hidden');
+  labelKelas.className = 'inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300';
+  labelKelas.innerText = kelasSemasa || '-';
 
-      const labelSubjek = document.getElementById('label-subjek-scan');
-      labelSubjek.classList.remove('hidden');
-      labelSubjek.className = 'inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300';
-      labelSubjek.innerText = subjekSemasa || '-';
+  const labelSubjek = document.getElementById('label-subjek-scan');
+  labelSubjek.classList.remove('hidden');
+  labelSubjek.className = 'inline-flex ml-2 text-xs font-bold px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300';
+  labelSubjek.innerText = subjekSemasa || '-';
 
-      if (html5QrcodeScanner) {
-        try {
-          html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(() => {});
-        } catch (_) {}
-        html5QrcodeScanner = null;
-      }
+  // Hentikan scanner lama jika ada
+  if (html5QrcodeScanner) {
+    try {
+      html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(() => {});
+    } catch (_) {}
+    html5QrcodeScanner = null;
+  }
 
-      html5QrcodeScanner = new Html5Qrcode("reader");
-      html5QrcodeScanner.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        onScanSuccess,
-        onScanFailure
-      ).catch(() => {
-        alert('Sila benarkan kebenaran kamera pada pelayar anda!');
-        tutupScanner();
-      });
-    }
+  html5QrcodeScanner = new Html5Qrcode("reader");
+
+  // 1. CUBA KAMERA BELAKANG DULU (Untuk Telefon)
+  html5QrcodeScanner.start(
+    { facingMode: 'environment' },
+    { fps: 10, qrbox: { width: 250, height: 250 } },
+    onScanSuccess,
+    onScanFailure
+  ).catch(err => {
+    console.warn("Kamera belakang tidak dijumpai (kemungkinan Laptop). Mencuba kamera depan...", err);
+    
+    // 2. JIKA GAGAL, FALLBACK KE KAMERA DEPAN / WEBCAM (Untuk Laptop)
+    html5QrcodeScanner.start(
+      { facingMode: 'user' },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      onScanSuccess,
+      onScanFailure
+    ).catch(err2 => {
+      alert('Gagal mengaktifkan kamera! Sila pastikan anda memberi kebenaran (Allow) kamera pada pelayar anda dan tiada aplikasi lain (seperti Zoom/Meet) yang sedang guna kamera.');
+      tutupScanner();
+    });
+  });
+}
 
     function tutupScanner() {
       if (html5QrcodeScanner) {
