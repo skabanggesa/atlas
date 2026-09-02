@@ -213,31 +213,35 @@
     </div>
   </div>
 
-  <!-- Modal: Semak Status Kelas -->
-  <div id="status-kelas-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-    <div class="w-full max-w-lg rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl p-5 lg:p-6">
-      <div class="flex items-center justify-between gap-3 mb-4">
-        <div>
-          <h3 class="text-xl font-bold text-indigo-300">Semak Status Kelas</h3>
-          <p class="text-sm text-slate-400 mt-1">Pilih kelas untuk melihat lokasi, guru, subjek dan masa terakhir.</p>
-        </div>
-        <button onclick="tutupSemakanStatusKelas()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+<!-- Modal: Semak Status Kelas -->
+<div id="status-kelas-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+  <div class="w-full max-w-lg rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl p-5 lg:p-6">
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <div>
+        <h3 class="text-xl font-bold text-indigo-300">Semak Status Kelas</h3>
+        <p class="text-sm text-slate-400 mt-1">Pilih kelas untuk melihat lokasi, guru, subjek dan masa terakhir.</p>
       </div>
+      <button onclick="tutupSemakanStatusKelas()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    </div>
 
-      <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Kelas</label>
-      <select id="select-kelas-semak" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500">
-        <option value="">-- Pilih Kelas --</option>
-      </select>
+    <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Kelas</label>
+    <select id="select-kelas-semak" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500">
+      <option value="">-- Pilih Kelas --</option>
+      <!-- Contoh pilihan kelas (atau diisi secara automatik melalui JS) -->
+      <option value="6 CEMERLANG">6 CEMERLANG</option>
+      <option value="5 CEMERLANG">5 CEMERLANG</option>
+    </select>
 
-      <button onclick="semakStatusKelas()" class="w-full mt-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-3 font-bold shadow-lg shadow-indigo-600/20">
-        🔎 Semak
-      </button>
+    <!-- Ditukar ke prosesSemakStatusKelas() -->
+    <button onclick="prosesSemakStatusKelas()" class="w-full mt-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 transition px-4 py-3 font-bold shadow-lg shadow-indigo-600/20">
+      🔎 Semak
+    </button>
 
-      <div id="hasil-status-kelas" class="hidden mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-        <div id="hasil-status-kelas-kandungan"></div>
-      </div>
+    <div id="hasil-status-kelas" class="hidden mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+      <div id="hasil-status-kelas-kandungan"></div>
     </div>
   </div>
+</div>
 
   <!-- Modal: Semak Masa / Lokasi -->
   <div id="lokasi-masa-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
