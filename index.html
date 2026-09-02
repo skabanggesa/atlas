@@ -240,26 +240,35 @@
     </div>
   </div>
 
-  <!-- Modal: Live Radar Admin -->
+ <!-- Modal: Live Radar Admin -->
   <div id="admin-screen" class="hidden fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-sm overflow-y-auto">
     <div class="max-w-6xl mx-auto p-4 lg:p-6 min-h-screen flex flex-col">
       <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-5 lg:p-6 mb-4">
         <div class="flex items-center justify-between gap-3 flex-wrap">
           <div>
             <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Panel Admin</p>
-            <h3 class="text-2xl font-black text-amber-300">Radar Keberadaan (Hari Ini)</h3>
+            <h3 class="text-2xl font-black text-amber-300">Radar Keberadaan & Sejarah</h3>
             <p id="label-masa-kemaskini" class="text-sm text-slate-400 mt-1">Memuat naik data...</p>
           </div>
           <button onclick="tutupLiveData()" class="rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200">Kembali</button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
+          <!-- Saringan Tarikh -->
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Pilih Tarikh</label>
+            <input type="date" id="filter-tarikh" onchange="muatDataMengikutTarikh()" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500" />
+          </div>
+
+          <!-- Saringan Guru -->
           <div>
             <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Saring Guru</label>
             <select id="filter-guru" onchange="saringDanPaparData()" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500">
               <option value="">Semua Guru</option>
             </select>
           </div>
+
+          <!-- Saringan Kelas / Lokasi -->
           <div>
             <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Saring Kelas / Lokasi</label>
             <select id="filter-kelas" onchange="saringDanPaparData()" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500">
@@ -284,7 +293,7 @@
             </thead>
             <tbody id="jadual-live-body" class="divide-y divide-slate-800/60">
               <tr>
-                <td colspan="6" class="p-6 text-center text-slate-500">Memuat naik rekod hari ini...</td>
+                <td colspan="6" class="p-6 text-center text-slate-500">Memuat naik rekod...</td>
               </tr>
             </tbody>
           </table>
@@ -292,7 +301,6 @@
       </div>
     </div>
   </div>
-
   <!-- Toast -->
   <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-28 opacity-0 transition-all duration-300 z-50 bg-emerald-500 text-slate-950 font-bold px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
     <span class="text-2xl">✅</span>
@@ -834,13 +842,41 @@ function onScanFailure(error) {
     // ==============================
     // LIVE DATA / ADMIN
     // ==============================
+    function getTarikhFormatYYYYMMDD(d) {
+      const dateObj = d ? new Date(d) : new Date();
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     function bukaLiveData() {
       document.getElementById('admin-screen').classList.remove('hidden');
-      fetch(`${GAS_WEB_APP_URL}?action=getLiveDataHariIni`)
+
+      const inputTarikh = document.getElementById('filter-tarikh');
+      if (inputTarikh && !inputTarikh.value) {
+        inputTarikh.value = getTarikhFormatYYYYMMDD();
+      }
+
+      muatDataMengikutTarikh();
+    }
+
+    function muatDataMengikutTarikh() {
+      const inputTarikh = document.getElementById('filter-tarikh');
+      const tarikhPilihan = inputTarikh ? inputTarikh.value : getTarikhFormatYYYYMMDD();
+
+      document.getElementById('label-masa-kemaskini').innerText = `Memuat naik data (${tarikhPilihan})...`;
+
+      const tbody = document.getElementById('jadual-live-body');
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-500">Memuat naik rekod...</td></tr>';
+      }
+
+      fetch(`${GAS_WEB_APP_URL}?action=getLiveDataHariIni&tarikh=${encodeURIComponent(tarikhPilihan)}`)
         .then(res => res.json())
         .then(data => {
           dataLiveGlobal = Array.isArray(data) ? data : [];
-          document.getElementById('label-masa-kemaskini').innerText = `Dikemas kini pada: ${new Date().toLocaleTimeString('ms-MY')}`;
+          document.getElementById('label-masa-kemaskini').innerText = `Tarikh: ${tarikhPilihan} | Dikemas kini: ${new Date().toLocaleTimeString('ms-MY')}`;
 
           const senaraiGuruUnique = [...new Set(dataLiveGlobal.map(item => item.nama).filter(Boolean))].sort();
           const senaraiKelasUnique = [...new Set(dataLiveGlobal.map(item => item.kelas).filter(Boolean))].sort();
@@ -848,17 +884,21 @@ function onScanFailure(error) {
           const selectGuru = document.getElementById('filter-guru');
           const selectKelas = document.getElementById('filter-kelas');
 
-          selectGuru.innerHTML = '<option value="">Semua Guru</option>';
-          senaraiGuruUnique.forEach(g => selectGuru.innerHTML += `<option value="${g}">${g}</option>`);
+          if (selectGuru) {
+            selectGuru.innerHTML = '<option value="">Semua Guru</option>';
+            senaraiGuruUnique.forEach(g => selectGuru.innerHTML += `<option value="${g}">${g}</option>`);
+          }
 
-          selectKelas.innerHTML = '<option value="">Semua Kelas / Lokasi</option>';
-          senaraiKelasUnique.forEach(k => selectKelas.innerHTML += `<option value="${k}">${k}</option>`);
+          if (selectKelas) {
+            selectKelas.innerHTML = '<option value="">Semua Kelas / Lokasi</option>';
+            senaraiKelasUnique.forEach(k => selectKelas.innerHTML += `<option value="${k}">${k}</option>`);
+          }
 
           saringDanPaparData();
         })
         .catch(() => {
           dataLiveGlobal = [];
-          document.getElementById('label-masa-kemaskini').innerText = `Ralat memuat naik data`;
+          document.getElementById('label-masa-kemaskini').innerText = `Ralat memuat naik data (${tarikhPilihan})`;
           saringDanPaparData();
         });
     }
@@ -868,8 +908,11 @@ function onScanFailure(error) {
     }
 
     function saringDanPaparData() {
-      const penapisGuru = document.getElementById('filter-guru').value;
-      const penapisKelas = document.getElementById('filter-kelas').value;
+      const selectGuru = document.getElementById('filter-guru');
+      const selectKelas = document.getElementById('filter-kelas');
+      
+      const penapisGuru = selectGuru ? selectGuru.value : '';
+      const penapisKelas = selectKelas ? selectKelas.value : '';
 
       let dataSaringan = dataLiveGlobal.filter(item => {
         return (penapisGuru === '' || item.nama === penapisGuru) && (penapisKelas === '' || item.kelas === penapisKelas);
@@ -882,6 +925,8 @@ function onScanFailure(error) {
       });
 
       const tbody = document.getElementById('jadual-live-body');
+      if (!tbody) return;
+      
       tbody.innerHTML = '';
 
       if (dataSaringan.length === 0) {
