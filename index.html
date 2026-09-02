@@ -574,32 +574,99 @@
       document.getElementById('subject-modal').classList.remove('flex');
     }
 
-    function bukaSemakanKelas() {
-      document.getElementById('hasil-status-kelas').classList.add('hidden');
-      document.getElementById('hasil-status-kelas-kandungan').innerHTML = '';
-      document.getElementById('select-kelas-semak').value = '';
-      document.getElementById('status-kelas-modal').classList.remove('hidden');
-      document.getElementById('status-kelas-modal').classList.add('flex');
-    }
+// --- MODAL SEMAK STATUS KELAS ---
+function bukaSemakanKelas() {
+  document.getElementById('hasil-status-kelas').classList.add('hidden');
+  document.getElementById('hasil-status-kelas-kandungan').innerHTML = '';
+  document.getElementById('select-kelas-semak').value = '';
+  document.getElementById('status-kelas-modal').classList.remove('hidden');
+  document.getElementById('status-kelas-modal').classList.add('flex');
+}
 
-    function tutupSemakanStatusKelas() {
-      document.getElementById('status-kelas-modal').classList.add('hidden');
-      document.getElementById('status-kelas-modal').classList.remove('flex');
-    }
+function tutupSemakanStatusKelas() {
+  document.getElementById('status-kelas-modal').classList.add('hidden');
+  document.getElementById('status-kelas-modal').classList.remove('flex');
+}
 
-    function bukaSemakanLokasiMasa() {
-      document.getElementById('hasil-status-lokasi').classList.add('hidden');
-      document.getElementById('hasil-status-lokasi-kandungan').innerHTML = '';
-      document.getElementById('select-lokasi-masa').value = '';
-      document.getElementById('input-masa-semak').value = formatDateTimeLocalNow();
-      document.getElementById('lokasi-masa-modal').classList.remove('hidden');
-      document.getElementById('lokasi-masa-modal').classList.add('flex');
-    }
+// FUNGSI UTAMA: Memproses semakan kelas ke Google Sheets (Code.gs)
+function prosesSemakStatusKelas() {
+  var namaKelas = document.getElementById('select-kelas-semak').value;
+  var elemHasil = document.getElementById('hasil-status-kelas');
+  var elemKandungan = document.getElementById('hasil-status-kelas-kandungan');
 
-    function tutupSemakanLokasiMasa() {
-      document.getElementById('lokasi-masa-modal').classList.add('hidden');
-      document.getElementById('lokasi-masa-modal').classList.remove('flex');
-    }
+  if (!namaKelas || namaKelas.trim() === "") {
+    elemHasil.classList.add('hidden');
+    elemKandungan.innerHTML = '';
+    return;
+  }
+
+  // 1. Tunjukkan status loading sementara menunggu jawapan
+  elemHasil.classList.remove('hidden');
+  elemKandungan.innerHTML = `
+    <div class="flex items-center justify-center p-4 text-slate-400 text-sm gap-2">
+      <span class="animate-spin">⏳</span> Sedang menyemak status keberadaan kelas...
+    </div>
+  `;
+
+  // 2. Panggil backend Code.gs
+  google.script.run
+    .withSuccessHandler(function(respon) {
+      if (respon.status === "DIPAKAI") {
+        elemKandungan.innerHTML = `
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-200">
+            <div class="flex items-center justify-between mb-2">
+              <span class="px-2 py-0.5 text-xs font-bold bg-rose-500 text-white rounded-md">🔴 SEDANG DIGUNAKAN</span>
+            </div>
+            <p class="font-black text-lg text-white">👤 ${respon.guru}</p>
+            <p class="text-sm text-slate-300 mt-1">📚 Subjek: <span class="font-semibold text-amber-300">${respon.subjek || '-'}</span></p>
+            <p class="text-xs text-slate-400 mt-2">⏱️ Masuk pada: ${respon.waktu}</p>
+          </div>
+        `;
+      } else if (respon.status === "KOSONG") {
+        elemKandungan.innerHTML = `
+          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200">
+            <div class="flex items-center justify-between mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold bg-emerald-500 text-white rounded-md">🟢 KELAS KOSONG</span>
+            </div>
+            <p class="font-bold text-base text-white mt-1">✅ Tiada rekod guru aktif buat masa ini.</p>
+            <p class="text-xs text-emerald-400/80 mt-1">Kelas sedia untuk digunakan.</p>
+          </div>
+        `;
+      } else {
+        elemKandungan.innerHTML = `
+          <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm">
+            ⚠️ ${respon.mesej || 'Gagal mendapat status kelas.'}
+          </div>
+        `;
+      }
+    })
+    .withFailureHandler(function(ralat) {
+      elemKandungan.innerHTML = `
+        <div class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          ❌ Ralat Sistem: ${ralat.message}
+        </div>
+      `;
+    })
+    .semakStatusKelas(namaKelas);
+}
+
+
+// --- MODAL SEMAK MASA - LOKASI ---
+function bukaSemakanLokasiMasa() {
+  document.getElementById('hasil-status-lokasi').classList.add('hidden');
+  document.getElementById('hasil-status-lokasi-kandungan').innerHTML = '';
+  document.getElementById('select-lokasi-masa').value = '';
+  if (typeof formatDateTimeLocalNow === 'function') {
+    document.getElementById('input-masa-semak').value = formatDateTimeLocalNow();
+  }
+  document.getElementById('lokasi-masa-modal').classList.remove('hidden');
+  document.getElementById('lokasi-masa-modal').classList.add('flex');
+}
+
+function tutupSemakanLokasiMasa() {
+  document.getElementById('lokasi-masa-modal').classList.add('hidden');
+  document.getElementById('lokasi-masa-modal').classList.remove('flex');
+}
 
     // ==============================
     // FLOW: MASUK / KELUAR
