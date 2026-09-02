@@ -106,61 +106,65 @@
             </div>
           </section>
 
-          <!-- App screen -->
+         <!-- App screen -->
           <section id="app-screen" class="hidden space-y-5">
-            <div class="grid md:grid-cols-[1fr_auto] gap-4 items-center bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
-              <div>
-                <p class="text-xs text-slate-500">Selamat kembali</p>
-                <div class="flex flex-wrap items-center gap-2 mt-1">
-                  <h3 id="paparan-nama" class="text-2xl font-extrabold text-white">Cikgu...</h3>
-                  <span id="badge-peranan" class="hidden text-[10px] bg-amber-500/15 text-amber-300 border border-amber-500/25 px-2 py-1 rounded-full font-bold">ADMIN</span>
-                </div>
-                <p class="text-sm text-slate-400 mt-1">Pilih tindakan di bawah untuk mula imbasan.</p>
-              </div>
-              <button onclick="tukarGuru()" class="text-sm text-slate-300 hover:text-rose-300 underline underline-offset-4">Tukar Guru</button>
-            </div>
-
-            <div class="grid sm:grid-cols-2 gap-4">
-              <button onclick="mulaMasuk()" class="rounded-3xl bg-emerald-600 hover:bg-emerald-500 transition p-5 text-left shadow-lg shadow-emerald-600/20">
-                <div class="text-3xl">🟢</div>
-                <div class="mt-3">
-                  <p class="text-lg font-black">MASUK</p>
-                  <p class="text-sm text-emerald-50/80">Pilih kelas, subjek dan scan lokasi.</p>
-                </div>
-              </button>
-
-              <button onclick="mulaKeluar()" class="rounded-3xl bg-rose-600 hover:bg-rose-500 transition p-5 text-left shadow-lg shadow-rose-600/20">
-                <div class="text-3xl">🔴</div>
-                <div class="mt-3">
-                  <p class="text-lg font-black">KELUAR</p>
-                  <p class="text-sm text-rose-50/80">Scan lokasi yang sama untuk keluar.</p>
-                </div>
-              </button>
-            </div>
-
-            <div class="grid sm:grid-cols-2 gap-4">
-              <button onclick="bukaSemakanKelas()" class="rounded-3xl bg-indigo-600 hover:bg-indigo-500 transition p-5 text-left shadow-lg shadow-indigo-600/20">
-                <div class="text-2xl">🔎</div>
-                <div class="mt-2">
-                  <p class="text-lg font-black">SEMAK STATUS KELAS</p>
-                  <p class="text-sm text-indigo-50/80">Cari di mana kelas berada, dengan guru siapa, dan subjek apa.</p>
-                </div>
-              </button>
-              
-            </div>
-
-            <button id="btn-admin-panel" onclick="bukaLiveData()" class="hidden w-full rounded-3xl bg-slate-800 hover:bg-slate-700 border border-amber-500/20 transition p-5 text-left shadow-lg">
-              <div class="flex items-center justify-between gap-3">
+            
+            <!-- Tambahan tag <div id="borang-utama"> di sini -->
+            <div id="borang-utama" class="space-y-5">
+              <div class="grid md:grid-cols-[1fr_auto] gap-4 items-center bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
                 <div>
-                  <div class="text-2xl">📡</div>
-                  <p class="mt-2 text-lg font-black text-amber-300">PANEL ADMIN / LIVE RADAR</p>
-                  <p class="text-sm text-slate-400">Lihat rekod hari ini mengikut guru dan lokasi.</p>
+                  <p class="text-xs text-slate-500">Selamat kembali</p>
+                  <div class="flex flex-wrap items-center gap-2 mt-1">
+                    <h3 id="paparan-nama" class="text-2xl font-extrabold text-white">Cikgu...</h3>
+                    <span id="badge-peranan" class="hidden text-[10px] bg-amber-500/15 text-amber-300 border border-amber-500/25 px-2 py-1 rounded-full font-bold">ADMIN</span>
+                  </div>
+                  <p class="text-sm text-slate-400 mt-1">Pilih tindakan di bawah untuk mula imbasan.</p>
                 </div>
-                <span class="text-amber-300 text-2xl">›</span>
+                <button onclick="tukarGuru()" class="text-sm text-slate-300 hover:text-rose-300 underline underline-offset-4">Tukar Guru</button>
               </div>
-            </button>
 
-            <!-- Scanner card -->
+              <div class="grid sm:grid-cols-2 gap-4">
+                <button onclick="mulaMasuk()" class="rounded-3xl bg-emerald-600 hover:bg-emerald-500 transition p-5 text-left shadow-lg shadow-emerald-600/20">
+                  <div class="text-3xl">🟢</div>
+                  <div class="mt-3">
+                    <p class="text-lg font-black">MASUK</p>
+                    <p class="text-sm text-emerald-50/80">Pilih kelas, subjek dan scan lokasi.</p>
+                  </div>
+                </button>
+
+                <button onclick="mulaKeluar()" class="rounded-3xl bg-rose-600 hover:bg-rose-500 transition p-5 text-left shadow-lg shadow-rose-600/20">
+                  <div class="text-3xl">🔴</div>
+                  <div class="mt-3">
+                    <p class="text-lg font-black">KELUAR</p>
+                    <p class="text-sm text-rose-50/80">Scan lokasi yang sama untuk keluar.</p>
+                  </div>
+                </button>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-4">
+                <button onclick="bukaSemakanKelas()" class="rounded-3xl bg-indigo-600 hover:bg-indigo-500 transition p-5 text-left shadow-lg shadow-indigo-600/20">
+                  <div class="text-2xl">🔎</div>
+                  <div class="mt-2">
+                    <p class="text-lg font-black">SEMAK STATUS KELAS</p>
+                    <p class="text-sm text-indigo-50/80">Cari di mana kelas berada, dengan guru siapa, dan subjek apa.</p>
+                  </div>
+                </button>
+              </div>
+
+              <button id="btn-admin-panel" onclick="bukaLiveData()" class="hidden w-full rounded-3xl bg-slate-800 hover:bg-slate-700 border border-amber-500/20 transition p-5 text-left shadow-lg">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-2xl">📡</div>
+                    <p class="mt-2 text-lg font-black text-amber-300">PANEL ADMIN / LIVE RADAR</p>
+                    <p class="text-sm text-slate-400">Lihat rekod hari ini mengikut guru dan lokasi.</p>
+                  </div>
+                  <span class="text-amber-300 text-2xl">›</span>
+                </div>
+              </button>
+            </div>
+            <!-- Penutup </div id="borang-utama"> -->
+
+            <!-- Scanner card (dikekalkan di luar borang-utama) -->
             <section id="scanner-card" class="hidden bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
               <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
                 <div>
@@ -172,11 +176,8 @@
               </div>
               <div id="reader" class="w-full overflow-hidden rounded-2xl border border-slate-700 bg-black min-h-[280px]"></div>
             </section>
+
           </section>
-        </div>
-      </main>
-    </div>
-  </div>
 
   <!-- Modal: Pilih Kelas -->
   <div id="class-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
