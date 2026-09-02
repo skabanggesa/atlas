@@ -710,6 +710,13 @@ function tutupSemakanLokasiMasa() {
     }
 
 function aktifkanScanner() {
+  // 1. Sembunyikan borang/paparan utama
+  const borangUtama = document.getElementById('borang-utama');
+  if (borangUtama) {
+    borangUtama.classList.add('hidden');
+  }
+
+  // 2. Paparkan modul scanner
   document.getElementById('scanner-card').classList.remove('hidden');
   document.getElementById('label-status-scan').classList.remove('hidden');
   document.getElementById('label-status-scan').className = modeScanner === 'MASUK'
@@ -759,20 +766,27 @@ function aktifkanScanner() {
   });
 }
 
-    function tutupScanner() {
-      if (html5QrcodeScanner) {
-        try {
-          html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(() => {});
-        } catch (_) {}
-      }
-      html5QrcodeScanner = null;
-      document.getElementById('scanner-card').classList.add('hidden');
-    }
+function tutupScanner() {
+  if (html5QrcodeScanner) {
+    try {
+      html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(() => {});
+    } catch (_) {}
+  }
+  html5QrcodeScanner = null;
 
-    function onScanFailure(error) {
-      // sengaja kosong
-    }
+  // 1. Sembunyikan skrin scanner
+  document.getElementById('scanner-card').classList.add('hidden');
 
+  // 2. Tunjukkan semula borang/paparan utama
+  const borangUtama = document.getElementById('borang-utama');
+  if (borangUtama) {
+    borangUtama.classList.remove('hidden');
+  }
+}
+
+function onScanFailure(error) {
+  // sengaja kosong
+}
     // =======================================================
     // PEMBAIKAN: INTEGRASI FORCE TAKEOVER & OCCUPIED / CONFLICT
     // =======================================================
