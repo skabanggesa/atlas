@@ -616,7 +616,8 @@ function prosesSemakStatusKelas() {
   var webAppUrl = "https://script.google.com/macros/s/AKfycby-p-SoAAgkEgFvHdm0rEVR1YTEAdd-86xNnwqOigL4lww1Lm1QbVC_YXeV6YVhFb-o8A/exec";
 
   // 3. Panggil backend menggunakan HTTP Fetch
-  fetch(`${webAppUrl}?aksi=semakKelas&kelas=${encodeURIComponent(namaKelas)}`)
+  // Gantikan baris fetch di index.html kepada ini:
+fetch(`${webAppUrl}?action=getStatusKelas&kelas=${encodeURIComponent(namaKelas)}`)
     .then(function(response) {
       return response.json();
     })
