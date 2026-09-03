@@ -8,10 +8,11 @@
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body class="min-h-screen bg-slate-950 text-white font-sans antialiased">
-  <div class="w-full max-w-5xl mx-auto p-4 md:p-8 space-y-6">
-    <div class="w-full max-w-6xl grid lg:grid-cols-[380px_1fr] gap-6">
-      <!-- Sidebar / Branding -->
-      <aside class="bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl p-6 lg:p-8 flex flex-col justify-between">
+  <div class="w-full max-w-7xl mx-auto p-4 md:p-8">
+    <div class="grid lg:grid-cols-[360px_1fr] gap-6 lg:gap-8 items-start">
+      
+      <!-- Sidebar / Branding (Sebelah Kiri) -->
+      <aside class="bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl p-6 lg:p-8">
         <div>
           <div class="flex items-center gap-3">
             <img src="atlas.png" alt="ATLAS Logo" class="w-16 h-16 rounded-2xl object-cover border border-slate-700 bg-slate-950" />
@@ -29,9 +30,11 @@
           <p class="mt-4 text-slate-300 text-sm leading-relaxed">
             Sistem imbasan keberadaan guru, kelas, subjek dan lokasi PdP dalam satu aliran yang ringkas.
           </p>
-          
-      <!-- Main App -->
-      <main class="w-full max-w-4xl mx-auto bg-slate-900/70 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
+        </div>
+      </aside>
+
+      <!-- Main App (Sebelah Kanan) -->
+      <main class="w-full bg-slate-900/70 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
         <!-- Top Bar -->
         <div class="px-5 lg:px-7 py-5 border-b border-slate-800 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
@@ -65,9 +68,9 @@
               </div>
 
               <div>
-  <label for="input-pin" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">PIN</label>
-  <input id="input-pin" type="password" maxlength="6" placeholder="••••••" class="w-full rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 text-center tracking-[0.4em] text-xl focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500" />
-</div>
+                <label for="input-pin" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">PIN</label>
+                <input id="input-pin" type="password" maxlength="6" placeholder="••••••" class="w-full rounded-2xl bg-slate-900 border border-slate-700 px-4 py-3 text-center tracking-[0.4em] text-xl focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500" />
+              </div>
 
               <button onclick="logMasuk()" class="w-full rounded-2xl bg-blue-600 hover:bg-blue-500 transition px-4 py-3 font-bold shadow-lg shadow-blue-600/20">
                 Simpan & Masuk
@@ -75,10 +78,8 @@
             </div>
           </section>
 
-         <!-- App screen -->
+          <!-- App screen -->
           <section id="app-screen" class="hidden space-y-5">
-            
-            <!-- Tambahan tag <div id="borang-utama"> di sini -->
             <div id="borang-utama" class="space-y-5">
               <div class="grid md:grid-cols-[1fr_auto] gap-4 items-center bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
                 <div>
@@ -131,9 +132,8 @@
                 </div>
               </button>
             </div>
-            <!-- Penutup </div id="borang-utama"> -->
 
-            <!-- Scanner card (dikekalkan di luar borang-utama) -->
+            <!-- Scanner card -->
             <section id="scanner-card" class="hidden bg-slate-950/60 border border-slate-800 rounded-3xl p-5 lg:p-6">
               <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
                 <div>
@@ -145,9 +145,8 @@
               </div>
               <div id="reader" class="w-full overflow-hidden rounded-2xl border border-slate-700 bg-black min-h-[280px]"></div>
             </section>
-
           </section>
-
+          
   <!-- Modal: Pilih Kelas -->
   <div id="class-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 backdrop-blur-sm p-4">
     <div class="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl p-5 lg:p-6">
